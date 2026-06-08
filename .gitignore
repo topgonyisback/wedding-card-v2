@@ -1,0 +1,20 @@
+.DS_Store
+.claude/
+
+# Local/reference files not needed for GitHub Pages
+Demo Wedding Website _ Cordially.html
+Demo Wedding Website _ Cordially_files/
+handoff/
+lumiteach_assets/
+lumiteach_help_center.html
+wedding_budget.html
+wedding.zip
+server.js
+
+# Original root-level scratch assets replaced by gallery/optimized assets
+dining.jpeg
+parking.jpg
+photobooth.jpg
+KakaoTalk_Photo_2026-06-03-17-46-42.jpeg
+혜경이어릴때.png
+혜경이어릴때.png
