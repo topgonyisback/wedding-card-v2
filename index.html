@@ -3849,6 +3849,7 @@ function bindGsapStoryScroll() {
   if (!section || !track || !window.gsap || !window.ScrollTrigger) return;
 
   gsap.registerPlugin(ScrollTrigger);
+  ScrollTrigger.config({ ignoreMobileResize: true });
 
   let inner = track.querySelector('.story-track-inner');
   if (!inner) {
@@ -3862,7 +3863,13 @@ function bindGsapStoryScroll() {
     const style = getComputedStyle(track);
     const paddingLeft = Number.parseFloat(style.paddingLeft) || 0;
     const paddingRight = Number.parseFloat(style.paddingRight) || 0;
-    return Math.max(0, inner.scrollWidth + paddingLeft + paddingRight - track.clientWidth);
+    const fullMove = Math.max(0, inner.scrollWidth + paddingLeft + paddingRight - track.clientWidth);
+    if (!isMobileStory() || fullMove === 0) return fullMove;
+
+    const lastCard = inner.querySelector('.carousel-card:last-child');
+    const lastCardWidth = lastCard?.getBoundingClientRect().width || 0;
+    const visibleTail = Math.min(track.clientWidth * 0.58, lastCardWidth || track.clientWidth);
+    return Math.max(0, fullMove - visibleTail);
   };
   const isMobileStory = () => window.matchMedia('(max-width: 640px)').matches;
   const scrollDistance = () => {
@@ -3906,7 +3913,13 @@ function bindGsapStoryScroll() {
     });
 
   let refreshTimer;
+  let lastViewportWidth = window.innerWidth;
   const refresh = () => {
+    const nextViewportWidth = window.innerWidth;
+    const widthChanged = Math.abs(nextViewportWidth - lastViewportWidth) > 2;
+    lastViewportWidth = nextViewportWidth;
+    if (isMobileStory() && !widthChanged) return;
+
     window.clearTimeout(refreshTimer);
     refreshTimer = window.setTimeout(() => {
       const st = storyTween.scrollTrigger;
@@ -3920,6 +3933,7 @@ function bindGsapStoryScroll() {
   };
 
   window.addEventListener('resize', refresh);
+  window.addEventListener('orientationchange', refresh);
 }
 bindGsapStoryScroll();
 
@@ -3930,21 +3944,29 @@ function bindGsapHeroCarousel() {
   if (!section || !track || !inner || !window.gsap || !window.ScrollTrigger) return;
 
   gsap.registerPlugin(ScrollTrigger);
+  ScrollTrigger.config({ ignoreMobileResize: true });
 
   const blur = section.querySelector('.hc-blur-bg');
   const bg = section.querySelector('.hc-bg');
 
   section.classList.add('hc-gsap');
 
+  const isMobileMoments = () => window.matchMedia('(max-width: 640px)').matches;
   const maxTrackMove = () => {
     const style = getComputedStyle(track);
     const paddingLeft = parseFloat(style.paddingLeft) || 0;
     const paddingRight = parseFloat(style.paddingRight) || 0;
-    return Math.max(0, inner.scrollWidth + paddingLeft + paddingRight - track.clientWidth);
+    const fullMove = Math.max(0, inner.scrollWidth + paddingLeft + paddingRight - track.clientWidth);
+    if (!isMobileMoments() || fullMove === 0) return fullMove;
+
+    const lastCard = inner.querySelector('.hc-card:last-child');
+    const lastCardWidth = lastCard?.getBoundingClientRect().width || 0;
+    const visibleTail = Math.min(track.clientWidth * 0.5, lastCardWidth || track.clientWidth);
+    return Math.max(0, fullMove - visibleTail);
   };
   const scrollDistance = () => {
     const move = maxTrackMove();
-    if (window.matchMedia('(max-width: 640px)').matches) {
+    if (isMobileMoments()) {
       return Math.max(window.innerHeight * 1.65, Math.min(4200, move * 1.55 + window.innerHeight * 0.55));
     }
     return Math.max(window.innerHeight * 1.1, Math.min(2800, move + window.innerHeight * 0.35));
@@ -3985,12 +4007,19 @@ function bindGsapHeroCarousel() {
     duration: 0.12
   });
 
+  let lastViewportWidth = window.innerWidth;
   const refresh = () => {
+    const nextViewportWidth = window.innerWidth;
+    const widthChanged = Math.abs(nextViewportWidth - lastViewportWidth) > 2;
+    lastViewportWidth = nextViewportWidth;
+    if (isMobileMoments() && !widthChanged) return;
+
     ScrollTrigger.getById('momentsHorizontal')?.refresh();
   };
 
   window.addEventListener('load', refresh);
   window.addEventListener('resize', refresh);
+  window.addEventListener('orientationchange', refresh);
   track.querySelectorAll('img').forEach(img => {
     if (!img.complete) img.addEventListener('load', refresh, { once: true });
   });
