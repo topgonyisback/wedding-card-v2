@@ -3864,7 +3864,15 @@ function bindGsapStoryScroll() {
     const paddingRight = Number.parseFloat(style.paddingRight) || 0;
     return Math.max(0, inner.scrollWidth + paddingLeft + paddingRight - track.clientWidth);
   };
-  const scrollDistance = () => Math.max(window.innerHeight * 1.15, Math.min(2200, maxTrackMove() * 0.85));
+  const isMobileStory = () => window.matchMedia('(max-width: 640px)').matches;
+  const scrollDistance = () => {
+    const move = maxTrackMove();
+    const vh = window.innerHeight;
+    if (isMobileStory()) {
+      return Math.max(vh * 1.55, Math.min(3600, move * 1.55 + vh * 0.45));
+    }
+    return Math.max(vh * 1.15, Math.min(2400, move * 0.95));
+  };
   const pinOffset = () => Math.round(document.querySelector('.nav')?.getBoundingClientRect().height || 0);
 
   gsap.set(inner, { x: 0, force3D: true });
@@ -3888,7 +3896,13 @@ function bindGsapStoryScroll() {
       x: () => -maxTrackMove(),
       force3D: true,
       ease: 'none',
-      duration: 0.92
+      duration: 0.8
+    })
+    .to(inner, {
+      x: () => -maxTrackMove(),
+      force3D: true,
+      ease: 'none',
+      duration: 0.12
     });
 
   let refreshTimer;
@@ -3930,6 +3944,9 @@ function bindGsapHeroCarousel() {
   };
   const scrollDistance = () => {
     const move = maxTrackMove();
+    if (window.matchMedia('(max-width: 640px)').matches) {
+      return Math.max(window.innerHeight * 1.65, Math.min(4200, move * 1.55 + window.innerHeight * 0.55));
+    }
     return Math.max(window.innerHeight * 1.1, Math.min(2800, move + window.innerHeight * 0.35));
   };
 
@@ -3959,8 +3976,14 @@ function bindGsapHeroCarousel() {
     x: () => -maxTrackMove(),
     force3D: true,
     ease: 'none',
-    duration: 1
-  }, 0);
+    duration: 0.88
+  }, 0)
+  .to(inner, {
+    x: () => -maxTrackMove(),
+    force3D: true,
+    ease: 'none',
+    duration: 0.12
+  });
 
   const refresh = () => {
     ScrollTrigger.getById('momentsHorizontal')?.refresh();
