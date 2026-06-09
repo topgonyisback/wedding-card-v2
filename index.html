@@ -1345,6 +1345,13 @@
     @media (max-width: 640px) {
       #story .carousel-card { flex-basis: 78vw; }
       #story .story-media { height: min(78vw, 34vh); }
+      #story .carousel-track {
+        overflow-x: auto;
+        scroll-snap-type: x mandatory;
+      }
+      #story .story-track-inner {
+        transform: none !important;
+      }
       #story .story-sticky {
         min-height: 0;
         padding: 0;
@@ -4014,6 +4021,52 @@ function bindGsapHeroCarousel() {
   });
 }
 bindGsapHeroCarousel();
+
+function bindMobileCarouselResets() {
+  const isMobile = () => window.matchMedia('(max-width: 640px)').matches;
+  const targets = [
+    { section: 'story', track: 'storyTrack' },
+    { section: 'moments', track: 'hcTrack2' },
+    { section: 'chapel', track: 'chapelTrack' }
+  ];
+
+  const resetTrack = track => {
+    if (!track) return;
+    track.scrollLeft = 0;
+    const inner = track.querySelector('.story-track-inner, .hc-track-inner');
+    if (inner && window.gsap) gsap.set(inner, { clearProps: 'transform' });
+  };
+
+  const resetAll = () => {
+    if (!isMobile()) return;
+    targets.forEach(({ track }) => resetTrack(document.getElementById(track)));
+  };
+
+  resetAll();
+  window.addEventListener('load', resetAll);
+  window.addEventListener('pageshow', resetAll);
+  window.addEventListener('orientationchange', () => window.setTimeout(resetAll, 250));
+
+  if (!('IntersectionObserver' in window)) return;
+
+  const entered = new Set();
+  const observer = new IntersectionObserver(entries => {
+    if (!isMobile()) return;
+    entries.forEach(entry => {
+      if (!entry.isIntersecting) return;
+      const item = targets.find(target => target.section === entry.target.id);
+      if (!item || entered.has(item.section)) return;
+      entered.add(item.section);
+      resetTrack(document.getElementById(item.track));
+    });
+  }, { threshold: 0.18 });
+
+  targets.forEach(({ section }) => {
+    const el = document.getElementById(section);
+    if (el) observer.observe(el);
+  });
+}
+bindMobileCarouselResets();
 
 /* ================================================================
    GALLERY + LIGHTBOX
