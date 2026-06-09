@@ -1589,7 +1589,12 @@
       .hc-title { font-size: clamp(30px, 10vw, 42px); }
       .hc-desc { font-size: 14px; line-height: 1.55; }
       .hc-item { flex: 0 0 clamp(190px, 58vw, 240px); }
-      .hc-track { padding: var(--ds-space-2) var(--section-heading-left) var(--ds-space-4); }
+      .hc-track {
+        overflow-x: auto;
+        scroll-snap-type: x mandatory;
+        padding: var(--ds-space-2) var(--section-heading-left) var(--ds-space-4);
+      }
+      .hc-track-inner { transform: none !important; }
       .hc-section .carousel-controls { padding: 0 var(--section-heading-left) 24px; }
     }
     @media (max-height: 820px) and (min-width: 641px) {
@@ -3523,6 +3528,7 @@
    ⚙️  설정 — 이 블록의 값만 교체하세요
 ================================================================ */
 const CONFIG = {
+  shareUrl: "https://topgonyisback.github.io/wedding-card-v2/",
   firebase: {
     apiKey:            "AIzaSyA-OAcmxIasAiEZ31OMpiXddOd46sZk7pY",
     authDomain:        "topgony-wedding.firebaseapp.com",
@@ -3859,25 +3865,22 @@ function bindGsapStoryScroll() {
     track.appendChild(inner);
   }
 
+  const isMobileStory = () => window.matchMedia('(max-width: 640px)').matches;
+  if (isMobileStory()) {
+    track.scrollLeft = 0;
+    gsap.set(inner, { clearProps: 'transform' });
+    return;
+  }
+
   const maxTrackMove = () => {
     const style = getComputedStyle(track);
     const paddingLeft = Number.parseFloat(style.paddingLeft) || 0;
     const paddingRight = Number.parseFloat(style.paddingRight) || 0;
-    const fullMove = Math.max(0, inner.scrollWidth + paddingLeft + paddingRight - track.clientWidth);
-    if (!isMobileStory() || fullMove === 0) return fullMove;
-
-    const lastCard = inner.querySelector('.carousel-card:last-child');
-    const lastCardWidth = lastCard?.getBoundingClientRect().width || 0;
-    const visibleTail = Math.min(track.clientWidth * 0.58, lastCardWidth || track.clientWidth);
-    return Math.max(0, fullMove - visibleTail);
+    return Math.max(0, inner.scrollWidth + paddingLeft + paddingRight - track.clientWidth);
   };
-  const isMobileStory = () => window.matchMedia('(max-width: 640px)').matches;
   const scrollDistance = () => {
     const move = maxTrackMove();
     const vh = window.innerHeight;
-    if (isMobileStory()) {
-      return Math.max(vh * 1.55, Math.min(3600, move * 1.55 + vh * 0.45));
-    }
     return Math.max(vh * 1.15, Math.min(2400, move * 0.95));
   };
   const pinOffset = () => Math.round(document.querySelector('.nav')?.getBoundingClientRect().height || 0);
@@ -3913,13 +3916,7 @@ function bindGsapStoryScroll() {
     });
 
   let refreshTimer;
-  let lastViewportWidth = window.innerWidth;
   const refresh = () => {
-    const nextViewportWidth = window.innerWidth;
-    const widthChanged = Math.abs(nextViewportWidth - lastViewportWidth) > 2;
-    lastViewportWidth = nextViewportWidth;
-    if (isMobileStory() && !widthChanged) return;
-
     window.clearTimeout(refreshTimer);
     refreshTimer = window.setTimeout(() => {
       const st = storyTween.scrollTrigger;
@@ -3952,23 +3949,21 @@ function bindGsapHeroCarousel() {
   section.classList.add('hc-gsap');
 
   const isMobileMoments = () => window.matchMedia('(max-width: 640px)').matches;
+  if (isMobileMoments()) {
+    section.classList.remove('hc-gsap');
+    track.scrollLeft = 0;
+    gsap.set(inner, { clearProps: 'transform' });
+    return;
+  }
+
   const maxTrackMove = () => {
     const style = getComputedStyle(track);
     const paddingLeft = parseFloat(style.paddingLeft) || 0;
     const paddingRight = parseFloat(style.paddingRight) || 0;
-    const fullMove = Math.max(0, inner.scrollWidth + paddingLeft + paddingRight - track.clientWidth);
-    if (!isMobileMoments() || fullMove === 0) return fullMove;
-
-    const lastCard = inner.querySelector('.hc-card:last-child');
-    const lastCardWidth = lastCard?.getBoundingClientRect().width || 0;
-    const visibleTail = Math.min(track.clientWidth * 0.5, lastCardWidth || track.clientWidth);
-    return Math.max(0, fullMove - visibleTail);
+    return Math.max(0, inner.scrollWidth + paddingLeft + paddingRight - track.clientWidth);
   };
   const scrollDistance = () => {
     const move = maxTrackMove();
-    if (isMobileMoments()) {
-      return Math.max(window.innerHeight * 1.65, Math.min(4200, move * 1.55 + window.innerHeight * 0.55));
-    }
     return Math.max(window.innerHeight * 1.1, Math.min(2800, move + window.innerHeight * 0.35));
   };
 
@@ -4007,13 +4002,7 @@ function bindGsapHeroCarousel() {
     duration: 0.12
   });
 
-  let lastViewportWidth = window.innerWidth;
   const refresh = () => {
-    const nextViewportWidth = window.innerWidth;
-    const widthChanged = Math.abs(nextViewportWidth - lastViewportWidth) > 2;
-    lastViewportWidth = nextViewportWidth;
-    if (isMobileMoments() && !widthChanged) return;
-
     ScrollTrigger.getById('momentsHorizontal')?.refresh();
   };
 
@@ -4341,7 +4330,7 @@ document.querySelectorAll('.account-copy').forEach(btn => {
    COPY LINK
 ================================================================ */
 document.getElementById('copy-btn').addEventListener('click', async () => {
-  await copyText(location.href);
+  await copyText(CONFIG.shareUrl);
   showCopyToast();
 });
 </script>
