@@ -1592,6 +1592,7 @@
       .hc-track {
         overflow-x: auto;
         scroll-snap-type: x mandatory;
+        scroll-padding-left: var(--section-heading-left);
         padding: var(--ds-space-2) var(--section-heading-left) var(--ds-space-4);
       }
       .hc-track-inner { transform: none !important; }
@@ -2964,6 +2965,7 @@
       .hc-track {
         overflow-x: auto;
         scroll-snap-type: x mandatory;
+        scroll-padding-left: var(--mobile-carousel-pad);
         padding-left: var(--mobile-carousel-pad);
         padding-right: var(--mobile-carousel-pad);
       }
@@ -3851,13 +3853,26 @@ document.querySelectorAll('.reveal').forEach(el => {
 /* HC Nav — 아이템 단위 스크롤 */
 function bindHcNav(trackId, prevId, nextId) {
   const track = document.getElementById(trackId);
-  if (!track) return;
+  const prev = document.getElementById(prevId);
+  const next = document.getElementById(nextId);
+  if (!track || !prev || !next) return;
+
   const step = () => {
+    const inner = track.querySelector('.hc-track-inner');
     const item = track.querySelector('.hc-item');
-    return item.offsetWidth + parseInt(getComputedStyle(track).gap);
+    const gap = Number.parseFloat(getComputedStyle(inner || track).gap) || 0;
+    return (item ? item.offsetWidth : track.clientWidth * 0.75) + gap;
   };
-  document.getElementById(prevId).addEventListener('click', () => track.scrollBy({ left: -step(), behavior: 'smooth' }));
-  document.getElementById(nextId).addEventListener('click', () => track.scrollBy({ left:  step(), behavior: 'smooth' }));
+  const sync = () => {
+    prev.disabled = track.scrollLeft <= 4;
+    next.disabled = track.scrollLeft + track.clientWidth >= track.scrollWidth - 4;
+  };
+
+  prev.addEventListener('click', () => track.scrollBy({ left: -step(), behavior: 'smooth' }));
+  next.addEventListener('click', () => track.scrollBy({ left:  step(), behavior: 'smooth' }));
+  track.addEventListener('scroll', sync, { passive: true });
+  window.addEventListener('resize', sync);
+  sync();
 }
 bindHcNav('hcTrack',  'hcPrev',  'hcNext');
 bindHcNav('hcTrack2', 'hcPrev2', 'hcNext2');
@@ -4102,11 +4117,17 @@ function bindMobileCarouselResets() {
     if (!isMobile()) return;
     targets.forEach(({ track }) => resetTrack(document.getElementById(track)));
   };
+  const scheduleResetAll = () => {
+    resetAll();
+    window.requestAnimationFrame(resetAll);
+    window.setTimeout(resetAll, 160);
+  };
 
-  resetAll();
-  window.addEventListener('load', resetAll);
-  window.addEventListener('pageshow', resetAll);
-  window.addEventListener('orientationchange', () => window.setTimeout(resetAll, 250));
+  scheduleResetAll();
+  window.addEventListener('load', scheduleResetAll);
+  window.addEventListener('pageshow', scheduleResetAll);
+  window.addEventListener('hashchange', scheduleResetAll);
+  window.addEventListener('orientationchange', () => window.setTimeout(scheduleResetAll, 250));
 
   if (!('IntersectionObserver' in window)) return;
 
