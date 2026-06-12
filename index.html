@@ -1345,13 +1345,6 @@
     @media (max-width: 640px) {
       #story .carousel-card { flex-basis: 78vw; }
       #story .story-media { height: min(78vw, 34vh); }
-      #story .carousel-track {
-        overflow-x: auto;
-        scroll-snap-type: x mandatory;
-      }
-      #story .story-track-inner {
-        transform: none !important;
-      }
       #story .story-sticky {
         min-height: 0;
         padding: 0;
@@ -2923,7 +2916,75 @@
       #lb-next { right: 4px; }
     }
 
+    @media (max-width: 640px) {
+      :root { --mobile-carousel-pad: 22px; }
+
+      .carousel-header {
+        padding-left: var(--mobile-carousel-pad);
+        padding-right: var(--mobile-carousel-pad);
+      }
+
+      .carousel-track {
+        gap: 16px;
+        padding-left: var(--mobile-carousel-pad);
+        padding-right: var(--mobile-carousel-pad);
+        scroll-padding-left: var(--mobile-carousel-pad);
+      }
+
+      #story .carousel-header,
+      #story .carousel-track {
+        padding-left: var(--mobile-carousel-pad);
+        padding-right: var(--mobile-carousel-pad);
+        scroll-padding-left: var(--mobile-carousel-pad);
+      }
+
+      #story .story-track-inner {
+        gap: 16px;
+        transform: none !important;
+      }
+
+      #story .carousel-card {
+        flex-basis: calc(100vw - (var(--mobile-carousel-pad) * 2));
+        max-width: calc(100vw - (var(--mobile-carousel-pad) * 2));
+      }
+
+      #story .story-media {
+        height: min(64vw, 280px);
+      }
+
+      #chapel .guide-item {
+        flex-basis: calc(100vw - (var(--mobile-carousel-pad) * 2));
+        max-width: calc(100vw - (var(--mobile-carousel-pad) * 2));
+      }
+
+      #chapel .guide-caption {
+        padding: 0 4px;
+      }
+
+      .hc-track {
+        overflow-x: auto;
+        scroll-snap-type: x mandatory;
+        padding-left: var(--mobile-carousel-pad);
+        padding-right: var(--mobile-carousel-pad);
+      }
+
+      .hc-track-inner {
+        transform: none !important;
+      }
+
+      .hc-hero-inner {
+        padding-left: var(--mobile-carousel-pad);
+        padding-right: var(--mobile-carousel-pad);
+      }
+
+      .hc-section .carousel-controls {
+        padding-left: var(--mobile-carousel-pad);
+        padding-right: var(--mobile-carousel-pad);
+      }
+    }
+
     @media (max-width: 390px) {
+      :root { --mobile-carousel-pad: 18px; }
       .section { padding: 56px 16px; }
       #hero-content h1 { font-size: 44px; }
       .couple-block-text { padding: 12px; }
@@ -3810,7 +3871,7 @@ function bindCarousel(trackId, prevId, nextId) {
   const next  = document.getElementById(nextId);
   if (!track || !prev || !next) return;
   const stepPx = () => {
-    const c = track.querySelector('.carousel-card');
+    const c = track.querySelector('.carousel-card, .guide-item');
     return (c ? c.offsetWidth : 360) + 20;
   };
   const sync = () => {
