@@ -2888,6 +2888,7 @@
       padding: clamp(36px, 7vw, 96px) 22px;
       text-align: center;
       color: var(--ds-color-on-dark);
+      transform: translateY(clamp(-56px, -5vh, -28px));
     }
     .share-hero .label {
       color: rgba(255,255,255,.72);
@@ -2896,7 +2897,7 @@
     }
     .share-hero h2 {
       font-family: var(--ds-font-display);
-      font-size: clamp(38px, 6.4vw, 92px);
+      font-size: clamp(30px, 5.2vw, 74px);
       font-weight: 700;
       line-height: 1.04;
       letter-spacing: -0.022em;
@@ -2958,7 +2959,7 @@
         border-radius: 0;
       }
       .share-hero h2 {
-        font-size: clamp(34px, 10vw, 56px);
+        font-size: clamp(30px, 8.8vw, 48px);
       }
       .share-row {
         bottom: 48px;
@@ -4133,17 +4134,6 @@ function bindHcNav(trackId, prevId, nextId) {
 
   prev.addEventListener('click', () => moveBy(-step()));
   next.addEventListener('click', () => moveBy(step()));
-  track.addEventListener('wheel', event => {
-    if (track.scrollWidth <= track.clientWidth) return;
-    const delta = Math.abs(event.deltaX) >= Math.abs(event.deltaY) ? event.deltaX : event.deltaY;
-    if (Math.abs(delta) < 1) return;
-    const maxLeft = track.scrollWidth - track.clientWidth;
-    const nextLeft = Math.max(0, Math.min(maxLeft, track.scrollLeft + delta));
-    if (nextLeft === track.scrollLeft) return;
-    event.preventDefault();
-    track.scrollLeft = nextLeft;
-    sync();
-  }, { passive: false });
   track.addEventListener('scroll', sync, { passive: true });
   window.addEventListener('resize', sync);
   sync();
