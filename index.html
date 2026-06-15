@@ -78,7 +78,7 @@
 
       --ds-container:      980px;
       --ds-container-wide: 1280px;
-      --ds-nav-height:     48px;
+      --ds-nav-height:     56px;
       --section-heading-left: max(70px, calc((100vw - 974px) / 2 + 70px));
     }
 
@@ -95,46 +95,65 @@
       -webkit-font-smoothing: antialiased;
       -moz-osx-font-smoothing: grayscale;
       letter-spacing: -0.028em;
-      overflow-x: hidden;
+      overflow-x: clip;
     }
-    html   { overflow-x: hidden; }
+    html   { overflow-x: clip; }
+    @supports not (overflow: clip) {
+      body, html { overflow-x: hidden; }
+    }
     img    { display: block; max-width: 100%; }
     a      { color: inherit; text-decoration: none; }
     button { font-family: inherit; cursor: pointer; }
 
     /* ================================================================
-       NAV  (frosted glass, 48px sticky)
+       NAV  (floating pill)
     ================================================================ */
     .nav {
+      --nav-frame-gap: clamp(14px, 1.55vw, 22px);
+      --nav-top: var(--nav-frame-gap);
+      --nav-x: var(--nav-frame-gap);
+      --nav-width: calc(100vw - (var(--nav-frame-gap) * 2));
+      --nav-bg-alpha: 0;
+      --nav-border-alpha: 0;
+      --nav-shadow-alpha: 0;
+      --nav-text-color: rgb(255,255,255);
       position: fixed;
-      top: 0; left: 0; right: 0;
+      top: var(--nav-top);
+      left: var(--nav-x);
+      right: var(--nav-x);
       z-index: 200;
       height: var(--ds-nav-height);
-      background: rgba(255,255,255,.82);
-      backdrop-filter: saturate(180%) blur(20px);
-      -webkit-backdrop-filter: saturate(180%) blur(20px);
-      border-bottom: 1px solid rgba(0,0,0,.06);
-      transition: background var(--ds-duration-fast) ease;
-    }
-    .nav.over-dark {
-      background: rgba(29,29,31,.82);
-      border-bottom-color: rgba(255,255,255,.08);
+      background: transparent;
+      pointer-events: none;
     }
     .nav-inner {
-      max-width: var(--ds-container);
+      max-width: var(--nav-width);
       margin: 0 auto;
       height: 100%;
-      padding: 0 22px;
+      padding: 0 18px 0 22px;
       display: flex;
       align-items: center;
       justify-content: space-between;
+      border-radius: 999px;
+      background: rgba(255,255,255,var(--nav-bg-alpha));
+      border: 1px solid rgba(29,29,31,var(--nav-border-alpha));
+      box-shadow: 0 16px 44px rgba(29,29,31,var(--nav-shadow-alpha));
+      backdrop-filter: saturate(180%) blur(18px);
+      -webkit-backdrop-filter: saturate(180%) blur(18px);
+      pointer-events: auto;
+      transition: background var(--ds-duration-fast) ease, border-color var(--ds-duration-fast) ease, box-shadow var(--ds-duration-fast) ease, max-width var(--ds-duration-fast) ease;
+    }
+    .nav.over-dark .nav-inner {
+      background: rgba(29,29,31,.74);
+      border-color: rgba(255,255,255,.12);
+      box-shadow: 0 16px 44px rgba(0,0,0,.24);
     }
     .nav-brand {
       font-family: var(--ds-font-display);
       font-size: 17px;
       font-weight: 600;
       letter-spacing: -0.018em;
-      color: var(--ds-color-text);
+      color: var(--nav-text-color);
       transition: color var(--ds-duration-fast);
     }
     .nav.over-dark .nav-brand { color: var(--ds-color-on-dark); }
@@ -145,14 +164,26 @@
     }
     .nav-links a {
       font-size: 14px;
-      color: var(--ds-color-text);
+      color: var(--nav-text-color);
       letter-spacing: -0.012em;
       opacity: .88;
       transition: opacity var(--ds-duration-fast);
     }
     .nav.over-dark .nav-links a { color: var(--ds-color-on-dark); }
     .nav-links a:hover { opacity: 1; }
-    @media (max-width: 680px) { .nav-links { display: none; } }
+    @media (max-width: 680px) {
+      :root { --ds-nav-height: 50px; }
+      .nav {
+        top: 10px;
+        left: 12px;
+        right: 12px;
+      }
+      .nav-inner {
+        max-width: calc(100vw - 24px);
+        padding: 0 18px;
+      }
+      .nav-links { display: none; }
+    }
     @media (max-width: 640px) { :root { --section-heading-left: 54px; } }
 
     /* ================================================================
@@ -256,7 +287,7 @@
       border-radius: var(--ds-radius-lg);
       padding: clamp(36px, 5vw, 56px);
       position: relative;
-      overflow: hidden;
+      overflow: visible;
       min-height: 420px;
       display: flex;
       flex-direction: column;
@@ -437,40 +468,42 @@
     }
 
     /* ================================================================
-       §0 INTRO HERO  (test scroll gather)
+       §0 INTRO HERO  (LOCKED: 레퍼런스 맞춤 완료, 동작/레이아웃 수정 금지)
     ================================================================ */
     #intro-hero {
       --intro-frame-gap: clamp(14px, 1.55vw, 22px);
       --intro-final-w: min(560px, 68vw);
-      --intro-final-h: min(676px, 75svh);
+      --intro-final-h: calc(100svh - (var(--intro-frame-gap) * 2));
       --intro-center-y: clamp(8px, 1.2vh, 12px);
       --intro-card-overlap: -16px;
       --intro-side-offset: calc((var(--intro-final-w) / 2) - var(--intro-card-overlap));
       --intro-side-gap: clamp(9px, 0.72vw, 12px);
-      --intro-side-wide: min(248px, 26vw);
-      --intro-side-tall-h: min(316px, 33vw);
-      --intro-side-small: min(194px, 20.3vw);
-      --intro-side-small-h: min(185px, 19.3vw);
+      --intro-side-wide: clamp(260px, 23vw, 340px);
+      --intro-side-tall-h: clamp(270px, 24vw, 352px);
+      --intro-side-small: clamp(200px, 17.95vw, 260px);
+      --intro-side-small-h: clamp(156px, 14vw, 202px);
       --intro-side-stack-h: calc(var(--intro-side-tall-h) + var(--intro-side-gap) + var(--intro-side-small-h));
       --intro-side-start-top: calc(var(--ds-nav-height) + 10px);
-      height: 100vh;
-      height: 100svh;
-      min-height: 640px;
+      height: calc(1200px + 100vh);
+      height: calc(1200px + 100svh);
+      min-height: calc(1200px + 640px);
       position: relative;
       z-index: 2;
-      overflow: hidden;
+      overflow: visible;
       background: #F7F1E8;
       color: #fff;
       isolation: isolate;
     }
     .intro-stage {
-      position: absolute;
-      inset: 0;
+      position: sticky;
+      top: 0;
       z-index: 1;
       width: 100%;
       height: 100vh;
       height: 100svh;
+      min-height: 640px;
       overflow: hidden;
+      background: #F7F1E8;
     }
     .intro-photo {
       position: absolute;
@@ -611,6 +644,12 @@
         --intro-frame-gap: 12px;
         height: 100svh;
         min-height: 0;
+        overflow: hidden;
+      }
+      .intro-stage {
+        position: relative;
+        height: 100svh;
+        min-height: 0;
       }
       .intro-photo.center {
         width: calc(100vw - (var(--intro-frame-gap) * 2));
@@ -640,11 +679,21 @@
     }
     @media (min-width: 761px) and (max-height: 760px) {
       #intro-hero {
-        --intro-final-h: min(560px, 74svh);
-        --intro-side-wide: clamp(190px, 15vw, 260px);
-        --intro-side-tall-h: clamp(242px, 19.1vw, 330px);
-        --intro-side-small: clamp(148px, 11.7vw, 204px);
-        --intro-side-small-h: clamp(141px, 11.2vw, 194px);
+        --intro-side-wide: clamp(236px, 22vw, 318px);
+        --intro-side-tall-h: clamp(246px, 23vw, 332px);
+        --intro-side-small: clamp(184px, 17vw, 248px);
+        --intro-side-small-h: clamp(144px, 13.2vw, 192px);
+      }
+    }
+    @media (min-width: 761px) and (max-width: 1100px) {
+      #intro-hero {
+        --intro-final-w: min(500px, 58vw);
+        --intro-card-overlap: -8px;
+        --intro-side-gap: 8px;
+        --intro-side-wide: clamp(196px, 22vw, 242px);
+        --intro-side-tall-h: clamp(212px, 24vw, 260px);
+        --intro-side-small: clamp(152px, 17vw, 188px);
+        --intro-side-small-h: clamp(118px, 13.2vw, 146px);
       }
     }
 
@@ -727,10 +776,34 @@
     ================================================================ */
     #greeting {
       background: #F7F1E8;
+      padding: 0 22px;
+      position: relative;
+      z-index: 3;
+      min-height: 300svh;
+    }
+    #greeting::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 22px;
+      right: 22px;
+      height: 1px;
+      background: rgba(29,29,31,.08);
+    }
+    .greeting-pin {
+      position: sticky;
+      top: 0;
+      height: 100svh;
+      min-height: 100svh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: clamp(72px, 10vh, 120px) 0;
+      background: #F7F1E8;
     }
     .greeting {
       text-align: center;
-      max-width: 600px;
+      width: min(760px, 100%);
       margin: 0 auto;
     }
     .greeting-eyebrow {
@@ -741,7 +814,7 @@
       font-weight: 600;
       color: var(--ds-color-signal);
       letter-spacing: -0.012em;
-      margin-bottom: var(--ds-space-8);
+      margin-bottom: clamp(34px, 6vh, 64px);
     }
     .greeting-eyebrow::before,
     .greeting-eyebrow::after {
@@ -754,28 +827,120 @@
     }
     .greeting-text {
       font-family: var(--ds-font-display);
-      font-size: clamp(20px, 2.8vw, 32px);
-      font-weight: 700;
-      line-height: 1.36;
+      font-size: clamp(28px, 5.1vw, 58px);
+      font-weight: 800;
+      line-height: 1.12;
       letter-spacing: -0.018em;
       color: var(--ds-color-text);
     }
-    .greeting-text p + p {
-      margin-top: var(--ds-space-4);
-      padding-top: var(--ds-space-4);
-      border-top: 1px solid var(--ds-color-divider-light);
+    .greeting-frame {
+      position: relative;
+      min-height: clamp(220px, 32vh, 330px);
+      display: grid;
+      place-items: center;
+      overflow: hidden;
+      isolation: isolate;
     }
-    .greeting-text p:last-child {
-      font-weight: 800;
-      color: var(--ds-color-ink);
+    .greeting-slide {
+      position: absolute;
+      inset: 0;
+      display: grid;
+      place-items: center;
+      opacity: 0;
+      transform: translateY(26px);
+      transition: opacity var(--ds-duration-base) var(--ds-ease), transform var(--ds-duration-base) var(--ds-ease);
+      pointer-events: none;
+    }
+    .greeting-slide.is-active {
+      opacity: 1;
+      transform: translateY(0);
+      pointer-events: auto;
+    }
+    .greeting-slide p {
+      max-width: 760px;
+      margin: 0 auto;
+    }
+    .greeting-line {
+      display: block;
+      white-space: nowrap;
+    }
+    .greeting-highlight {
+      display: inline-block;
+      color: var(--ds-color-signal);
+      font-weight: 900;
+    }
+    .greeting-reveal-word {
+      display: inline-block;
+      color: #0A84FF;
+      font-weight: 900;
+      will-change: filter, opacity;
+    }
+    .greeting-fire {
+      color: #D70015;
+      font-weight: 900;
+    }
+    .greeting-water {
+      color: #0071E3;
+      font-weight: 900;
+    }
+    .greeting-witness {
+      color: #7A4DFF;
+      font-weight: 900;
+    }
+    .greeting-checkin {
+      color: #0A7A4B;
+      font-weight: 900;
+    }
+    .greeting-emoji {
+      display: inline-block;
+      margin-left: .06em;
+      font-size: .78em;
+      line-height: 1;
+      vertical-align: .04em;
+    }
+    .greeting-dots {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      margin-top: clamp(18px, 3vh, 28px);
+    }
+    .greeting-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 999px;
+      background: rgba(29,29,31,.22);
+      transition: width var(--ds-duration-base) var(--ds-ease), background var(--ds-duration-base) var(--ds-ease);
+    }
+    .greeting-dot.is-active {
+      width: 26px;
+      background: var(--ds-color-text);
     }
     .greeting-sign {
-      margin-top: var(--ds-space-8);
-      padding-top: var(--ds-space-6);
-      border-top: 1px solid var(--ds-color-divider);
+      margin-top: clamp(32px, 5vh, 56px);
       font-size: 15px;
       color: var(--ds-color-text-tertiary);
       letter-spacing: -0.012em;
+    }
+    @media (max-width: 640px) {
+      .greeting-pin {
+        height: 100svh;
+        min-height: 100svh;
+        padding: 72px 0;
+      }
+      .greeting-eyebrow {
+        margin-bottom: 38px;
+      }
+      .greeting-text {
+        font-size: clamp(21px, 5.8vw, 29px);
+        line-height: 1.16;
+      }
+      .greeting-frame {
+        min-height: 230px;
+      }
+      .greeting-sign {
+        margin-top: 34px;
+      }
     }
 
     /* ================================================================
@@ -1213,7 +1378,7 @@
       padding-bottom: clamp(8px, 1.8vh, 18px);
     }
     #story.story-scroll-section {
-      padding: clamp(42px, 7vh, 96px) 0;
+      padding: clamp(28px, 4.2vh, 58px) 0;
       position: relative;
     }
     #story .story-sticky {
@@ -1226,8 +1391,8 @@
       overflow: visible;
     }
     #story.story-scroll-section .carousel-track {
-      scroll-snap-type: none;
-      scroll-behavior: auto;
+      scroll-snap-type: x mandatory;
+      scroll-behavior: smooth;
     }
     #story .story-track-inner {
       display: flex;
@@ -1443,7 +1608,7 @@
       overflow: hidden;
       background: #111;
     }
-    /* 배경: GSAP pin 내부에서만 고정되는 섹션 배경 */
+    /* 배경: 일반 가로 스크롤 섹션 배경 */
     .hc-bg {
       position: absolute;
       inset: 0;
@@ -1475,12 +1640,12 @@
     .hc-hero {
       position: relative; z-index: 3;
       width: 100%;
-      min-height: clamp(240px, 34vh, 390px);
+      min-height: clamp(220px, 30vh, 340px);
       display: flex; align-items: flex-start;
     }
     .hc-hero-inner {
-      padding: clamp(72px, 10vh, 132px) var(--section-heading-left)
-               clamp(22px, 4vh, 58px);
+      padding: clamp(48px, 6.4vh, 82px) 22px
+               clamp(14px, 2.4vh, 34px) var(--section-heading-left);
       max-width: calc(760px + var(--section-heading-left));
     }
     .hc-label {
@@ -1512,10 +1677,13 @@
     .hc-track {
       position: relative; z-index: 3;
       display: block;
-      overflow: hidden;
+      overflow-x: auto;
+      overflow-y: hidden;
       scroll-snap-type: none;
       scroll-behavior: auto;
+      overscroll-behavior-x: contain;
       -webkit-overflow-scrolling: touch;
+      touch-action: pan-x pan-y;
       padding: clamp(10px, 2vh, 24px) var(--section-heading-left) clamp(16px, 3vh, 36px);
       scrollbar-width: none;
     }
@@ -1591,7 +1759,7 @@
       .hc-item { flex: 0 0 clamp(190px, 58vw, 240px); }
       .hc-track {
         overflow-x: auto;
-        scroll-snap-type: x mandatory;
+        scroll-snap-type: none;
         scroll-padding-left: var(--section-heading-left);
         padding: var(--ds-space-2) var(--section-heading-left) var(--ds-space-4);
       }
@@ -2682,7 +2850,7 @@
       align-items: stretch;
       justify-content: center;
       overflow: hidden;
-      background: var(--ds-color-paper);
+      background: var(--ds-color-ink);
     }
     .share-hero {
       position: relative;
@@ -2964,7 +3132,7 @@
 
       .hc-track {
         overflow-x: auto;
-        scroll-snap-type: x mandatory;
+        scroll-snap-type: none;
         scroll-padding-left: var(--mobile-carousel-pad);
         padding-left: var(--mobile-carousel-pad);
         padding-right: var(--mobile-carousel-pad);
@@ -3046,13 +3214,34 @@
      §2  GREETING
 ================================================================ -->
 <section id="greeting" class="section">
-  <div class="container">
-    <div class="greeting reveal">
+  <div class="container greeting-pin">
+    <div class="greeting">
       <div class="greeting-eyebrow">✈ &nbsp;초대합니다</div>
-      <div class="greeting-text">
-        <p>막연했던 사랑의 의미를<br>선명하게 해준 사람을 만났습니다.</p>
-        <p>불과 물처럼 전혀 달랐던 두 사람이<br>같은 항공편에 오르게 되었습니다.</p>
-        <p>저희의 여정에 증인으로<br>체크인해 주세요.</p>
+      <div class="greeting-text greeting-frame" aria-live="polite">
+        <div class="greeting-slide is-active">
+          <p>
+            <span class="greeting-line">막연했던 <span class="greeting-highlight">사랑의 의미</span>를</span>
+            <span class="greeting-line"><span class="greeting-reveal-word">선명하게</span> 해준 사람을 만났습니다.</span>
+          </p>
+        </div>
+        <div class="greeting-slide">
+          <p>
+            <span class="greeting-line"><span class="greeting-fire">불<span class="greeting-emoji" aria-hidden="true">🔥</span></span>과 <span class="greeting-water">물<span class="greeting-emoji" aria-hidden="true">💦</span></span>처럼</span>
+            <span class="greeting-line">전혀 달랐던 두 사람이</span>
+            <span class="greeting-line">같은 항공편에 오르게 되었습니다.</span>
+          </p>
+        </div>
+        <div class="greeting-slide">
+          <p>
+            <span class="greeting-line">저희의 여정에 <span class="greeting-witness">증인</span>으로</span>
+            <span class="greeting-line"><span class="greeting-checkin">체크인</span>해 주세요.</span>
+          </p>
+        </div>
+      </div>
+      <div class="greeting-dots" aria-hidden="true">
+        <span class="greeting-dot is-active"></span>
+        <span class="greeting-dot"></span>
+        <span class="greeting-dot"></span>
       </div>
       <div class="greeting-sign">조건희 · 염혜경 드림</div>
     </div>
@@ -3639,17 +3828,18 @@ try {
 ================================================================ */
 const mainNav = document.getElementById('main-nav');
 function updateNav() {
-  const hero = document.getElementById('intro-hero');
   const dday = document.getElementById('dday');
   const gb   = document.getElementById('guestbook');
-  if (!hero || !dday || !gb || !mainNav) return;
+  const share = document.getElementById('share');
+  if (!dday || !gb || !share || !mainNav) return;
   const scrollY = window.scrollY;
-  const heroBottom = hero.offsetTop + hero.offsetHeight;
   const ddayTop = dday.offsetTop, ddayBottom = ddayTop + dday.offsetHeight;
   const gbTop   = gb.offsetTop,   gbBottom   = gbTop   + gb.offsetHeight;
-  const isDark = scrollY < heroBottom - 48 ||
+  const shareTop = share.offsetTop, shareBottom = shareTop + share.offsetHeight;
+  const isDark =
     (scrollY >= ddayTop - 48 && scrollY < ddayBottom - 48) ||
-    (scrollY >= gbTop   - 48 && scrollY < gbBottom   - 48);
+    (scrollY >= gbTop   - 48 && scrollY < gbBottom   - 48) ||
+    (scrollY >= shareTop - 48 && scrollY < shareBottom - 48);
   mainNav.classList.toggle('over-dark', isDark);
 }
 window.addEventListener('scroll', updateNav, { passive: true });
@@ -3679,114 +3869,182 @@ function bindIntroHeroMotion() {
     document.getElementById('greeting')?.scrollIntoView({ behavior: 'smooth' });
   });
 
-  if (!window.gsap || !window.ScrollTrigger) return;
-  gsap.registerPlugin(ScrollTrigger);
+  window.ScrollTrigger?.getById('introHeroGather')?.kill();
 
+  const stage = section.querySelector('.intro-stage');
   const center = section.querySelector('.intro-photo.center');
   const centerImg = center?.querySelector('img');
   const copy = section.querySelector('.intro-copy');
-  const hint = section.querySelector('.intro-scroll-hint');
-  const photos = section.querySelectorAll('.intro-photo');
+  const nav = document.getElementById('main-nav');
+  const sidePhotos = Array.from(section.querySelectorAll('.intro-photo:not(.center)'));
+  if (!stage || !center || !centerImg || !copy) return;
 
-  gsap.set(center, { xPercent: -50, yPercent: -50, x: 0, y: 0, scale: 1 });
-  gsap.set(photos, { force3D: true, rotation: 0 });
-  gsap.set(copy, { xPercent: -50, yPercent: -50, x: 0, y: 0, scale: 1 });
+  const clamp = (value, min = 0, max = 1) => Math.min(max, Math.max(min, value));
+  const lerp = (start, end, progress) => start + (end - start) * progress;
+  const easeOutCubic = progress => 1 - Math.pow(1 - clamp(progress), 3);
 
-  const frameGap = () => window.matchMedia('(max-width: 760px)').matches
-    ? 12
-    : Math.min(22, Math.max(14, window.innerWidth * 0.0155));
-  const frameWidth = () => `${Math.max(1, window.innerWidth - frameGap() * 2)}px`;
-  const frameHeight = () => `${Math.max(1, window.innerHeight - frameGap() * 2)}px`;
-  const desktopCenterWidth = () => Math.min(560, window.innerWidth * 0.68);
-  const desktopCenterHeight = () => Math.min(676, window.innerHeight * 0.75);
-  const desktopCenterY = () => Math.min(12, Math.max(8, window.innerHeight * 0.012));
-  const desktopCopyScale = () => window.innerWidth < 1100 ? 0.42 : 0.48;
-  const offscreenX = (selector, side) => () => {
-    const el = section.querySelector(selector);
-    if (!el) return side === 'left' ? '-110vw' : '110vw';
-    const rect = el.getBoundingClientRect();
-    const margin = Math.max(28, window.innerWidth * 0.02);
-    return side === 'left'
-      ? -(rect.right + margin)
-      : window.innerWidth - rect.left + margin;
+  let viewportW = window.innerWidth;
+  let viewportH = window.innerHeight;
+  let stageW = viewportW;
+  let scrollDistance = 1;
+  let isDesktop = window.matchMedia('(min-width: 761px)').matches;
+  let targetProgress = 0;
+  let renderedProgress = 0;
+  let rafId = 0;
+  let refreshTimer = 0;
+
+  const frameGap = () => isDesktop
+    ? Math.min(22, Math.max(14, viewportW * 0.0155))
+    : 12;
+  const frameWidth = () => Math.max(1, viewportW - frameGap() * 2);
+  const frameHeight = () => Math.max(1, viewportH - frameGap() * 2);
+  const finalCenterWidth = () => viewportW <= 1100
+    ? Math.min(500, viewportW * 0.58)
+    : Math.min(560, viewportW * 0.68);
+  const finalCenterY = () => Math.min(12, Math.max(8, viewportH * 0.012));
+  const finalCopyScale = () => viewportW < 1100 ? 0.42 : 0.48;
+  const finalRadius = () => Math.min(34, Math.max(20, finalCenterWidth() * 0.058));
+  const floatingNavWidth = () => Math.min(980, viewportW - 32);
+  const setIntroNav = progress => {
+    if (!nav) return;
+    if (!isDesktop) {
+      nav.style.setProperty('--nav-top', '10px');
+      nav.style.setProperty('--nav-x', '12px');
+      nav.style.setProperty('--nav-width', 'calc(100vw - 24px)');
+      nav.style.setProperty('--nav-bg-alpha', '.9');
+      nav.style.setProperty('--nav-border-alpha', '.08');
+      nav.style.setProperty('--nav-shadow-alpha', '.12');
+      nav.style.setProperty('--nav-text-color', 'rgb(29,29,31)');
+      return;
+    }
+
+    const navProgress = easeOutCubic(clamp((progress - 0.03) / 0.44));
+    const embeddedInset = frameGap();
+    const x = lerp(embeddedInset, 16, navProgress);
+    const top = lerp(embeddedInset, 16, navProgress);
+    const width = lerp(frameWidth(), floatingNavWidth(), navProgress);
+    const textTone = Math.round(255 + (29 - 255) * navProgress);
+
+    nav.style.setProperty('--nav-top', `${top}px`);
+    nav.style.setProperty('--nav-x', `${x}px`);
+    nav.style.setProperty('--nav-width', `${width}px`);
+    nav.style.setProperty('--nav-bg-alpha', `${0.9 * navProgress}`);
+    nav.style.setProperty('--nav-border-alpha', `${0.08 * navProgress}`);
+    nav.style.setProperty('--nav-shadow-alpha', `${0.12 * navProgress}`);
+    nav.style.setProperty('--nav-text-color', `rgb(${textTone},${textTone},${textTone})`);
   };
 
-  const mm = gsap.matchMedia();
+  const measure = () => {
+    viewportW = window.innerWidth;
+    viewportH = window.innerHeight;
+    stageW = stage.clientWidth || viewportW;
+    scrollDistance = Math.max(1, section.offsetHeight - viewportH);
+    isDesktop = window.matchMedia('(min-width: 761px)').matches;
+  };
 
-  mm.add('(min-width: 761px)', () => {
-    const tl = gsap.timeline({
-      scrollTrigger: {
-        id: 'introHeroGather',
-        trigger: section,
-        start: 'top top',
-        end: '+=1200',
-        pin: true,
-        scrub: 0.65,
-        anticipatePin: 1,
-        invalidateOnRefresh: true
-      }
+  const getProgress = () => {
+    if (!isDesktop) return 0;
+    const rect = section.getBoundingClientRect();
+    return clamp(-rect.top / scrollDistance);
+  };
+
+  const sideStart = photo => {
+    const margin = Math.max(32, stageW * 0.025);
+    const goesLeft = photo.classList.contains('left-outer') || photo.classList.contains('left-inner');
+    const x = goesLeft
+      ? -(photo.offsetLeft + photo.offsetWidth + margin)
+      : stageW - photo.offsetLeft + margin;
+    const yFactor = photo.classList.contains('left-outer') || photo.classList.contains('right-outer') ? 0.18 : 0.16;
+    return { x, y: viewportH * yFactor };
+  };
+
+  const render = immediate => {
+    if (!isDesktop) {
+      renderedProgress = 0;
+      targetProgress = 0;
+      center.style.width = `${frameWidth()}px`;
+      center.style.height = `${frameHeight()}px`;
+      center.style.borderRadius = '18px';
+      center.style.transform = 'translate(-50%, -50%) translate3d(0, 0, 0)';
+      centerImg.style.transform = 'scale(1)';
+      copy.style.transform = 'translate(-50%, -50%) scale(1)';
+      sidePhotos.forEach(photo => {
+        photo.style.opacity = '0';
+        photo.style.transform = 'translate3d(0, 0, 0)';
+      });
+      setIntroNav(1);
+      rafId = 0;
+      return;
+    }
+
+    renderedProgress = immediate
+      ? targetProgress
+      : lerp(renderedProgress, targetProgress, 0.18);
+
+    const centerProgress = easeOutCubic(renderedProgress);
+    const sideProgress = easeOutCubic(clamp((renderedProgress - 0.04) / 0.74));
+    const width = lerp(frameWidth(), finalCenterWidth(), centerProgress);
+    const height = frameHeight();
+    const radius = lerp(18, finalRadius(), centerProgress);
+    const centerY = lerp(0, finalCenterY(), centerProgress);
+    const imageScale = lerp(1, 1.16, centerProgress);
+    const copyScale = lerp(1, finalCopyScale(), centerProgress);
+
+    center.style.width = `${width}px`;
+    center.style.height = `${height}px`;
+    center.style.borderRadius = `${radius}px`;
+    center.style.transform = `translate(-50%, -50%) translate3d(0, ${centerY}px, 0)`;
+    centerImg.style.transform = `scale(${imageScale})`;
+    copy.style.transform = `translate(-50%, -50%) scale(${copyScale})`;
+    setIntroNav(renderedProgress);
+
+    sidePhotos.forEach(photo => {
+      const start = sideStart(photo);
+      photo.style.opacity = `${sideProgress}`;
+      photo.style.transform = `translate3d(${start.x * (1 - sideProgress)}px, ${start.y * (1 - sideProgress)}px, 0)`;
     });
 
-    tl.fromTo('.intro-photo.left-outer', { x: offscreenX('.intro-photo.left-outer', 'left'), y: '18vh', opacity: 1 }, { x: 0, y: 0, opacity: 1, ease: 'power3.out', duration: .82 }, 0)
-      .fromTo('.intro-photo.left-inner', { x: offscreenX('.intro-photo.left-inner', 'left'), y: '16vh', opacity: 1 }, { x: 0, y: 0, opacity: 1, ease: 'power3.out', duration: .82 }, 0)
-      .fromTo('.intro-photo.right-inner', { x: offscreenX('.intro-photo.right-inner', 'right'), y: '16vh', opacity: 1 }, { x: 0, y: 0, opacity: 1, ease: 'power3.out', duration: .82 }, 0)
-      .fromTo('.intro-photo.right-outer', { x: offscreenX('.intro-photo.right-outer', 'right'), y: '18vh', opacity: 1 }, { x: 0, y: 0, opacity: 1, ease: 'power3.out', duration: .82 }, 0)
-      .fromTo(center, {
-        width: frameWidth,
-        height: frameHeight,
-        top: '50%',
-        y: 0
-      }, {
-        width: () => `${desktopCenterWidth()}px`,
-        height: () => `${desktopCenterHeight()}px`,
-        top: '50%',
-        y: desktopCenterY,
-        borderRadius: () => Math.min(43, Math.max(20, desktopCenterWidth() * 0.076)),
-        ease: 'power3.out',
-        duration: 1
-      }, 0)
-      .to(centerImg, { scale: 1.16, ease: 'power3.out', duration: 1 }, 0)
-      .to(copy, { scale: desktopCopyScale, y: 0, ease: 'none', duration: 1 }, 0);
+    if (!immediate && Math.abs(renderedProgress - targetProgress) > 0.001) {
+      rafId = window.requestAnimationFrame(() => render(false));
+    } else {
+      rafId = 0;
+    }
+  };
 
-    return () => tl.scrollTrigger?.kill();
-  });
+  const scheduleRender = () => {
+    measure();
+    targetProgress = getProgress();
+    if (!rafId) rafId = window.requestAnimationFrame(() => render(false));
+  };
 
-  mm.add('(max-width: 760px)', () => {
-    gsap.set(center, {
-      width: frameWidth,
-      height: frameHeight,
-      top: '50%',
-      xPercent: -50,
-      yPercent: -50,
-      x: 0,
-      y: 0,
-      scale: 1,
-      borderRadius: 18
-    });
-    gsap.set(centerImg, { scale: 1 });
-    gsap.set(copy, { xPercent: -50, yPercent: -50, x: 0, y: 0, scale: 1 });
-    if (hint) gsap.set(hint, { clearProps: 'transform' });
-  });
-
-  let refreshTimer;
-  const refresh = () => {
+  const refreshScrollTriggers = () => {
+    if (!window.ScrollTrigger) return;
     window.clearTimeout(refreshTimer);
-    refreshTimer = window.setTimeout(() => {
-      ScrollTrigger.getById('introHeroGather')?.animation?.invalidate();
-      ScrollTrigger.getById('introHeroGatherMobile')?.animation?.invalidate();
-      ScrollTrigger.refresh();
-    }, 120);
+    refreshTimer = window.setTimeout(() => ScrollTrigger.refresh(), 140);
   };
 
-  window.addEventListener('load', refresh);
-  window.addEventListener('resize', refresh);
-  window.addEventListener('orientationchange', refresh);
-  window.visualViewport?.addEventListener('resize', refresh);
+  const sync = () => {
+    if (rafId) window.cancelAnimationFrame(rafId);
+    rafId = 0;
+    measure();
+    targetProgress = getProgress();
+    renderedProgress = targetProgress;
+    render(true);
+    refreshScrollTriggers();
+  };
+
+  window.addEventListener('scroll', scheduleRender, { passive: true });
+  window.addEventListener('resize', sync);
+  window.addEventListener('orientationchange', () => window.setTimeout(sync, 160));
+  window.visualViewport?.addEventListener('resize', sync);
   section.querySelectorAll('img').forEach(img => {
-    if (!img.complete) img.addEventListener('load', refresh, { once: true });
+    if (!img.complete) img.addEventListener('load', sync, { once: true });
   });
+
+  sync();
 }
 bindIntroHeroMotion();
+bindGreetingSlides();
 
 /* ================================================================
    COUNTDOWN
@@ -3867,9 +4125,25 @@ function bindHcNav(trackId, prevId, nextId) {
     prev.disabled = track.scrollLeft <= 4;
     next.disabled = track.scrollLeft + track.clientWidth >= track.scrollWidth - 4;
   };
+  const moveBy = amount => {
+    const left = Math.max(0, Math.min(track.scrollWidth - track.clientWidth, track.scrollLeft + amount));
+    track.scrollLeft = left;
+    sync();
+  };
 
-  prev.addEventListener('click', () => track.scrollBy({ left: -step(), behavior: 'smooth' }));
-  next.addEventListener('click', () => track.scrollBy({ left:  step(), behavior: 'smooth' }));
+  prev.addEventListener('click', () => moveBy(-step()));
+  next.addEventListener('click', () => moveBy(step()));
+  track.addEventListener('wheel', event => {
+    if (track.scrollWidth <= track.clientWidth) return;
+    const delta = Math.abs(event.deltaX) >= Math.abs(event.deltaY) ? event.deltaX : event.deltaY;
+    if (Math.abs(delta) < 1) return;
+    const maxLeft = track.scrollWidth - track.clientWidth;
+    const nextLeft = Math.max(0, Math.min(maxLeft, track.scrollLeft + delta));
+    if (nextLeft === track.scrollLeft) return;
+    event.preventDefault();
+    track.scrollLeft = nextLeft;
+    sync();
+  }, { passive: false });
   track.addEventListener('scroll', sync, { passive: true });
   window.addEventListener('resize', sync);
   sync();
@@ -3893,8 +4167,17 @@ function bindCarousel(trackId, prevId, nextId) {
     prev.disabled = track.scrollLeft <= 4;
     next.disabled = track.scrollLeft + track.clientWidth >= track.scrollWidth - 4;
   };
-  prev.addEventListener('click', () => track.scrollBy({ left: -stepPx(), behavior: 'smooth' }));
-  next.addEventListener('click', () => track.scrollBy({ left:  stepPx(), behavior: 'smooth' }));
+  const moveBy = amount => {
+    const left = Math.max(0, Math.min(track.scrollWidth - track.clientWidth, track.scrollLeft + amount));
+    if (track.scrollTo) {
+      track.scrollTo({ left, behavior: 'smooth' });
+    } else {
+      track.scrollLeft = left;
+    }
+    window.setTimeout(sync, 320);
+  };
+  prev.addEventListener('click', () => moveBy(-stepPx()));
+  next.addEventListener('click', () => moveBy(stepPx()));
   track.addEventListener('scroll', sync, { passive: true });
   window.addEventListener('resize', sync);
 
@@ -3932,13 +4215,12 @@ function bindCarousel(trackId, prevId, nextId) {
 bindCarousel('storyTrack', 'storyPrev', 'storyNext');
 bindCarousel('chapelTrack', 'chapelPrev', 'chapelNext');
 
-function bindGsapStoryScroll() {
+function bindPlainStoryScroll() {
   const section = document.getElementById('story');
   const track = document.getElementById('storyTrack');
-  if (!section || !track || !window.gsap || !window.ScrollTrigger) return;
+  if (!section || !track) return;
 
-  gsap.registerPlugin(ScrollTrigger);
-  ScrollTrigger.config({ ignoreMobileResize: true });
+  window.ScrollTrigger?.getById('storyHorizontal')?.kill();
 
   let inner = track.querySelector('.story-track-inner');
   if (!inner) {
@@ -3948,155 +4230,142 @@ function bindGsapStoryScroll() {
     track.appendChild(inner);
   }
 
-  const isMobileStory = () => window.matchMedia('(max-width: 640px)').matches;
-  if (isMobileStory()) {
-    track.scrollLeft = 0;
-    gsap.set(inner, { clearProps: 'transform' });
-    return;
-  }
-
-  const maxTrackMove = () => {
-    const style = getComputedStyle(track);
-    const paddingLeft = Number.parseFloat(style.paddingLeft) || 0;
-    const paddingRight = Number.parseFloat(style.paddingRight) || 0;
-    return Math.max(0, inner.scrollWidth + paddingLeft + paddingRight - track.clientWidth);
-  };
-  const scrollDistance = () => {
-    const move = maxTrackMove();
-    const vh = window.innerHeight;
-    return Math.max(vh * 1.15, Math.min(2400, move * 0.95));
-  };
-  const pinOffset = () => Math.round(document.querySelector('.nav')?.getBoundingClientRect().height || 0);
-
-  gsap.set(inner, { x: 0, force3D: true });
-
-  const storyTween = gsap.timeline({
-    scrollTrigger: {
-      trigger: section,
-      start: () => `top ${pinOffset()}px`,
-      end: () => `+=${scrollDistance()}`,
-      pin: true,
-      scrub: 0.45,
-      anticipatePin: 0,
-      id: 'storyHorizontal',
-      invalidateOnRefresh: true
-    }
-  });
-
-  storyTween
-    .to(inner, { x: 0, force3D: true, ease: 'none', duration: 0.08 })
-    .to(inner, {
-      x: () => -maxTrackMove(),
-      force3D: true,
-      ease: 'none',
-      duration: 0.8
-    })
-    .to(inner, {
-      x: () => -maxTrackMove(),
-      force3D: true,
-      ease: 'none',
-      duration: 0.12
-    });
-
-  let refreshTimer;
-  const refresh = () => {
-    window.clearTimeout(refreshTimer);
-    refreshTimer = window.setTimeout(() => {
-      const st = storyTween.scrollTrigger;
-      if (!st?.isActive) {
-        track.scrollLeft = 0;
-        gsap.set(inner, { x: 0 });
-      }
-      storyTween.invalidate();
-      st?.refresh();
-    }, 120);
-  };
-
-  window.addEventListener('resize', refresh);
-  window.addEventListener('orientationchange', refresh);
+  track.scrollLeft = 0;
+  inner.style.transform = '';
+  window.gsap?.set(inner, { clearProps: 'transform' });
+  window.requestAnimationFrame(() => window.dispatchEvent(new Event('resize')));
 }
-bindGsapStoryScroll();
+bindPlainStoryScroll();
 
-function bindGsapHeroCarousel() {
+function bindPlainMomentsCarousel() {
   const section = document.getElementById('moments');
   const track = document.getElementById('hcTrack2');
   const inner = track?.querySelector('.hc-track-inner');
-  if (!section || !track || !inner || !window.gsap || !window.ScrollTrigger) return;
+  if (!section || !track || !inner) return;
 
-  gsap.registerPlugin(ScrollTrigger);
-  ScrollTrigger.config({ ignoreMobileResize: true });
+  window.ScrollTrigger?.getById('momentsHorizontal')?.kill();
+  section.classList.remove('hc-gsap');
+  track.scrollLeft = 0;
+  inner.style.transform = '';
+  window.gsap?.set(inner, { clearProps: 'transform' });
+  window.requestAnimationFrame(() => window.dispatchEvent(new Event('resize')));
+}
+bindPlainMomentsCarousel();
 
-  const blur = section.querySelector('.hc-blur-bg');
-  const bg = section.querySelector('.hc-bg');
+function bindGreetingSlides() {
+  const section = document.getElementById('greeting');
+  const panel = section?.querySelector('.greeting');
+  const slides = section ? Array.from(section.querySelectorAll('.greeting-slide')) : [];
+  const dots = section ? Array.from(section.querySelectorAll('.greeting-dot')) : [];
+  if (!section || !panel || !slides.length) return;
 
-  section.classList.add('hc-gsap');
-
-  const isMobileMoments = () => window.matchMedia('(max-width: 640px)').matches;
-  if (isMobileMoments()) {
-    section.classList.remove('hc-gsap');
-    track.scrollLeft = 0;
-    gsap.set(inner, { clearProps: 'transform' });
-    return;
-  }
-
-  const maxTrackMove = () => {
-    const style = getComputedStyle(track);
-    const paddingLeft = parseFloat(style.paddingLeft) || 0;
-    const paddingRight = parseFloat(style.paddingRight) || 0;
-    return Math.max(0, inner.scrollWidth + paddingLeft + paddingRight - track.clientWidth);
+  let activeIndex = 0;
+  const setActive = index => {
+    const nextIndex = Math.max(0, Math.min(slides.length - 1, index));
+    if (nextIndex === activeIndex && slides[nextIndex].classList.contains('is-active')) return;
+    activeIndex = nextIndex;
+    slides.forEach((slide, slideIndex) => {
+      slide.classList.toggle('is-active', slideIndex === activeIndex);
+    });
+    dots.forEach((dot, dotIndex) => {
+      dot.classList.toggle('is-active', dotIndex === activeIndex);
+    });
   };
-  const scrollDistance = () => {
-    const move = maxTrackMove();
-    return Math.max(window.innerHeight * 1.1, Math.min(2800, move + window.innerHeight * 0.35));
-  };
 
-  gsap.set(inner, { x: 0, force3D: true });
-  if (blur) gsap.set(blur, { autoAlpha: 1 });
+  setActive(0);
+
+  if (!window.gsap || !window.ScrollTrigger) return;
+  const revealWords = Array.from(section.querySelectorAll('.greeting-reveal-word'));
+  gsap.set(slides, { autoAlpha: 0, y: 26 });
+  gsap.set(slides[0], { autoAlpha: 1, y: 0 });
+  gsap.set(revealWords, { filter: 'blur(9px)', opacity: 0.52 });
+
+  const updateActive = progress => {
+    const index = progress < 0.58 ? 0 : progress < 0.82 ? 1 : 2;
+    setActive(index);
+  };
 
   const tl = gsap.timeline({
+    defaults: { ease: 'power2.out' },
     scrollTrigger: {
-      id: 'momentsHorizontal',
+      id: 'greetingSlides',
       trigger: section,
       start: 'top top',
-      end: () => `+=${scrollDistance()}`,
-      pin: true,
-      scrub: true,
-      anticipatePin: 1,
-      invalidateOnRefresh: true
+      end: 'bottom bottom',
+      scrub: 0.12,
+      invalidateOnRefresh: true,
+      refreshPriority: 1,
+      onUpdate: self => updateActive(self.progress),
+      onLeaveBack: () => updateActive(0),
+      onLeave: () => setActive(slides.length - 1)
     }
   });
 
-  if (bg) {
-    tl.fromTo(bg, { scale: 1.04 }, { scale: 1, ease: 'none', duration: 1 }, 0);
-  }
-  if (blur) {
-    tl.to(blur, { autoAlpha: 1, ease: 'none', duration: 0.01 }, 0);
-  }
-  tl.to(inner, {
-    x: () => -maxTrackMove(),
-    force3D: true,
-    ease: 'none',
-    duration: 0.88
-  }, 0)
-  .to(inner, {
-    x: () => -maxTrackMove(),
-    force3D: true,
-    ease: 'none',
-    duration: 0.12
-  });
+  tl.to(revealWords, { filter: 'blur(0px)', opacity: 1, duration: 0.2, ease: 'power2.out' }, 0.12)
+    .to(slides[0], { autoAlpha: 0, y: -18, duration: 0.06 }, 0.54)
+    .fromTo(slides[1], { autoAlpha: 0, y: 18 }, { autoAlpha: 1, y: 0, duration: 0.08 }, 0.58)
+    .to(slides[1], { autoAlpha: 0, y: -18, duration: 0.06 }, 0.78)
+    .fromTo(slides[2], { autoAlpha: 0, y: 18 }, { autoAlpha: 1, y: 0, duration: 0.08 }, 0.82)
+    .to({}, { duration: 0.10 });
+}
 
-  const refresh = () => {
-    ScrollTrigger.getById('momentsHorizontal')?.refresh();
+function bindMobileCarouselResets() {
+  const isMobile = () => window.matchMedia('(max-width: 640px)').matches;
+  const targets = [
+    { section: 'story', track: 'storyTrack' },
+    { section: 'moments', track: 'hcTrack2' },
+    { section: 'chapel', track: 'chapelTrack' }
+  ];
+
+  const resetTrack = track => {
+    if (!track) return;
+    track.scrollLeft = 0;
+    const inner = track.querySelector('.story-track-inner, .hc-track-inner');
+    if (inner && window.gsap) gsap.set(inner, { clearProps: 'transform' });
   };
 
-  window.addEventListener('load', refresh);
-  window.addEventListener('resize', refresh);
-  window.addEventListener('orientationchange', refresh);
-  track.querySelectorAll('img').forEach(img => {
-    if (!img.complete) img.addEventListener('load', refresh, { once: true });
+  const resetAll = () => {
+    if (!isMobile()) return;
+    targets.forEach(({ track }) => resetTrack(document.getElementById(track)));
+  };
+  const scheduleResetAll = () => {
+    resetAll();
+    window.requestAnimationFrame(resetAll);
+    window.setTimeout(resetAll, 160);
+  };
+
+  scheduleResetAll();
+  window.addEventListener('load', scheduleResetAll);
+  window.addEventListener('pageshow', scheduleResetAll);
+  window.addEventListener('hashchange', scheduleResetAll);
+  window.addEventListener('orientationchange', () => window.setTimeout(scheduleResetAll, 250));
+
+  if (!('IntersectionObserver' in window)) return;
+
+  const entered = new Set();
+  const observer = new IntersectionObserver(entries => {
+    if (!isMobile()) return;
+    entries.forEach(entry => {
+      if (!entry.isIntersecting) return;
+      const item = targets.find(target => target.section === entry.target.id);
+      if (!item || entered.has(item.section)) return;
+      entered.add(item.section);
+      resetTrack(document.getElementById(item.track));
+    });
+  }, { threshold: 0.18 });
+
+  targets.forEach(({ section }) => {
+    const el = document.getElementById(section);
+    if (el) observer.observe(el);
   });
 }
-bindGsapHeroCarousel();
+bindMobileCarouselResets();
+
+if (window.ScrollTrigger) {
+  window.addEventListener('load', () => {
+    window.requestAnimationFrame(() => ScrollTrigger.refresh());
+  });
+}
 
 function bindMobileCarouselResets() {
   const isMobile = () => window.matchMedia('(max-width: 640px)').matches;
