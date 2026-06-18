@@ -4696,7 +4696,7 @@ document.getElementById('gb-form').addEventListener('submit', async e => {
   const payload = {
     name,
     message,
-    createdAt: db ? firebase.firestore.FieldValue.serverTimestamp() : new Date().toISOString()
+    createdAt: new Date().toISOString()
   };
   try {
     if (db) { await db.collection('guestbook').add(payload); }
