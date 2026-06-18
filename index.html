@@ -1917,9 +1917,11 @@
       width: 100%;
       padding: 0 84px;
       max-height: calc(100vh - 96px);
-      transition: opacity .16s ease, transform .16s ease;
+      transition: opacity .08s ease, transform .08s ease;
     }
     #lb-content.fading { opacity: 0; transform: scale(.96); }
+    #lb-content.switching { animation: lb-swap .12s ease; }
+    @keyframes lb-swap { from { opacity: .72; transform: scale(.985); } to { opacity: 1; transform: scale(1); } }
 
     #lb-img {
       max-width: 100%;
@@ -3432,22 +3434,22 @@
   </div>
   <div class="hc-track" id="hcTrack2">
     <div class="hc-track-inner">
-      <div class="hc-item" role="button" tabindex="0" aria-label="함께한 순간 01 크게 보기" data-src="gallery/moments01.jpg">
+      <div class="hc-item" role="button" tabindex="0" aria-label="함께한 순간 01 크게 보기" data-src="gallery/optimized/moments01.webp">
         <div class="hc-img"><img src="gallery/optimized/moments01.webp" alt="함께한 순간 01" width="900" height="1350" decoding="async"></div>
       </div>
-      <div class="hc-item" role="button" tabindex="0" aria-label="함께한 순간 02 크게 보기" data-src="gallery/moments02.jpg">
+      <div class="hc-item" role="button" tabindex="0" aria-label="함께한 순간 02 크게 보기" data-src="gallery/optimized/moments02.webp">
         <div class="hc-img"><img src="gallery/optimized/moments02.webp" alt="함께한 순간 02" width="900" height="1350" decoding="async"></div>
       </div>
-      <div class="hc-item" role="button" tabindex="0" aria-label="함께한 순간 03 크게 보기" data-src="gallery/moments03.jpg">
+      <div class="hc-item" role="button" tabindex="0" aria-label="함께한 순간 03 크게 보기" data-src="gallery/optimized/moments03.webp">
         <div class="hc-img"><img src="gallery/optimized/moments03.webp" alt="함께한 순간 03" width="900" height="1350" decoding="async"></div>
       </div>
-      <div class="hc-item" role="button" tabindex="0" aria-label="함께한 순간 04 크게 보기" data-src="gallery/moments04.jpg">
+      <div class="hc-item" role="button" tabindex="0" aria-label="함께한 순간 04 크게 보기" data-src="gallery/optimized/moments04.webp">
         <div class="hc-img"><img src="gallery/optimized/moments04.webp" alt="함께한 순간 04" width="900" height="1350" decoding="async"></div>
       </div>
-      <div class="hc-item" role="button" tabindex="0" aria-label="함께한 순간 05 크게 보기" data-src="gallery/moments05.jpg">
+      <div class="hc-item" role="button" tabindex="0" aria-label="함께한 순간 05 크게 보기" data-src="gallery/optimized/moments05.webp">
         <div class="hc-img"><img src="gallery/optimized/moments05.webp" alt="함께한 순간 05" width="900" height="1350" decoding="async"></div>
       </div>
-      <div class="hc-item" role="button" tabindex="0" aria-label="함께한 순간 06 크게 보기" data-src="gallery/moments06.jpg">
+      <div class="hc-item" role="button" tabindex="0" aria-label="함께한 순간 06 크게 보기" data-src="gallery/optimized/moments06.webp">
         <div class="hc-img"><img src="gallery/optimized/moments06.webp" alt="함께한 순간 06" width="900" height="1350" decoding="async"></div>
       </div>
     </div>
@@ -3484,12 +3486,12 @@
 
   <!-- Moments 그리드 -->
   <div class="gal-grid reveal" id="gal-grid">
-    <div class="gal-item" data-src="gallery/moments01.jpg"><img src="gallery/optimized/moments01.webp" alt="" width="900" height="1350" loading="lazy" decoding="async" onerror="this.closest('.gal-item').style.display='none'"><div class="gal-ov"></div></div>
-    <div class="gal-item" data-src="gallery/moments02.jpg"><img src="gallery/optimized/moments02.webp" alt="" width="900" height="1350" loading="lazy" decoding="async" onerror="this.closest('.gal-item').style.display='none'"><div class="gal-ov"></div></div>
-    <div class="gal-item" data-src="gallery/moments03.jpg"><img src="gallery/optimized/moments03.webp" alt="" width="900" height="1350" loading="lazy" decoding="async" onerror="this.closest('.gal-item').style.display='none'"><div class="gal-ov"></div></div>
-    <div class="gal-item" data-src="gallery/moments04.jpg"><img src="gallery/optimized/moments04.webp" alt="" width="900" height="1350" loading="lazy" decoding="async" onerror="this.closest('.gal-item').style.display='none'"><div class="gal-ov"></div></div>
-    <div class="gal-item" data-src="gallery/moments05.jpg"><img src="gallery/optimized/moments05.webp" alt="" width="900" height="1350" loading="lazy" decoding="async" onerror="this.closest('.gal-item').style.display='none'"><div class="gal-ov"></div></div>
-    <div class="gal-item" data-src="gallery/moments06.jpg"><img src="gallery/optimized/moments06.webp" alt="" width="900" height="1350" loading="lazy" decoding="async" onerror="this.closest('.gal-item').style.display='none'"><div class="gal-ov"></div></div>
+    <div class="gal-item" data-src="gallery/optimized/moments01.webp"><img src="gallery/optimized/moments01.webp" alt="" width="900" height="1350" loading="lazy" decoding="async" onerror="this.closest('.gal-item').style.display='none'"><div class="gal-ov"></div></div>
+    <div class="gal-item" data-src="gallery/optimized/moments02.webp"><img src="gallery/optimized/moments02.webp" alt="" width="900" height="1350" loading="lazy" decoding="async" onerror="this.closest('.gal-item').style.display='none'"><div class="gal-ov"></div></div>
+    <div class="gal-item" data-src="gallery/optimized/moments03.webp"><img src="gallery/optimized/moments03.webp" alt="" width="900" height="1350" loading="lazy" decoding="async" onerror="this.closest('.gal-item').style.display='none'"><div class="gal-ov"></div></div>
+    <div class="gal-item" data-src="gallery/optimized/moments04.webp"><img src="gallery/optimized/moments04.webp" alt="" width="900" height="1350" loading="lazy" decoding="async" onerror="this.closest('.gal-item').style.display='none'"><div class="gal-ov"></div></div>
+    <div class="gal-item" data-src="gallery/optimized/moments05.webp"><img src="gallery/optimized/moments05.webp" alt="" width="900" height="1350" loading="lazy" decoding="async" onerror="this.closest('.gal-item').style.display='none'"><div class="gal-ov"></div></div>
+    <div class="gal-item" data-src="gallery/optimized/moments06.webp"><img src="gallery/optimized/moments06.webp" alt="" width="900" height="1350" loading="lazy" decoding="async" onerror="this.closest('.gal-item').style.display='none'"><div class="gal-ov"></div></div>
     <div class="gal-item" data-src="gallery/Wedding_Snapshots1.JPG"><img src="gallery/optimized/Wedding_Snapshots1.webp" alt="" width="1200" height="2140" loading="lazy" decoding="async" onerror="this.closest('.gal-item').style.display='none'"><div class="gal-ov"></div></div>
     <div class="gal-item" data-src="gallery/Wedding_Snapshots5.png"><img src="gallery/optimized/Wedding_Snapshots5.webp" alt="" width="1200" height="2140" loading="lazy" decoding="async" onerror="this.closest('.gal-item').style.display='none'"><div class="gal-ov"></div></div>
     <div class="gal-item" data-src="gallery/optimized/Wedding_Snapshots6_rotated.webp"><img src="gallery/optimized/Wedding_Snapshots6_rotated.webp" alt="" width="1200" height="2140" loading="lazy" decoding="async" onerror="this.closest('.gal-item').style.display='none'"><div class="gal-ov"></div></div>
@@ -4439,8 +4441,8 @@ const lbPhNum   = document.getElementById('lb-ph-num');
 const lbCtr     = document.getElementById('lb-counter');
 const lbDots    = document.getElementById('lb-dots');
 let lbIdx      = 0;
-let lbBusy     = false;
 let lbItems    = galItems;
+let lbSwapTimer;
 
 function lbSetItems(items) {
   lbItems = items.length ? items : galItems;
@@ -4463,6 +4465,15 @@ function lbSyncUI(i) {
   document.getElementById('lb-next').style.opacity = lbItems.length <= 1 ? '0' : '1';
 }
 
+function lbPreload(i) {
+  if (!lbItems.length) return;
+  const src = lbItems[(i + lbItems.length) % lbItems.length]?.dataset.src;
+  if (src) {
+    const img = new Image();
+    img.src = src;
+  }
+}
+
 function lbRender(i) {
   const src = lbItems[i].dataset.src;
   if (src) {
@@ -4475,6 +4486,8 @@ function lbRender(i) {
     lbPhNum.textContent  = `${i + 1} / ${lbItems.length}`;
   }
   lbSyncUI(i);
+  lbPreload(i + 1);
+  lbPreload(i - 1);
 }
 
 function lbOpen(i) {
@@ -4491,22 +4504,15 @@ function lbClose() {
   setTimeout(() => { lbImg.src = ''; }, 300);
 }
 
-async function lbGoTo(i) {
-  if (lbBusy || i === lbIdx) return;
-  lbBusy = true;
-
-  /* fade out */
-  lbContent.classList.add('fading');
-  await new Promise(r => setTimeout(r, 160));
-
-  /* switch */
+function lbGoTo(i) {
+  if (i === lbIdx) return;
   lbIdx = i;
+  lbContent.classList.remove('fading', 'switching');
+  void lbContent.offsetWidth;
+  lbContent.classList.add('switching');
   lbRender(i);
-
-  /* fade in */
-  lbContent.classList.remove('fading');
-  await new Promise(r => setTimeout(r, 160));
-  lbBusy = false;
+  clearTimeout(lbSwapTimer);
+  lbSwapTimer = setTimeout(() => lbContent.classList.remove('switching'), 140);
 }
 
 function lbNav(d) { lbGoTo((lbIdx + d + lbItems.length) % lbItems.length); }
