@@ -1698,11 +1698,11 @@
     .hc-hero {
       position: relative; z-index: 3;
       width: 100%;
-      min-height: clamp(220px, 30vh, 340px);
+      min-height: clamp(260px, 35vh, 420px);
       display: flex; align-items: flex-start;
     }
     .hc-hero-inner {
-      padding: clamp(48px, 6.4vh, 82px) 22px
+      padding: clamp(72px, 9vh, 122px) 22px
                clamp(14px, 2.4vh, 34px) var(--section-heading-left);
       max-width: calc(760px + var(--section-heading-left));
     }
@@ -1808,9 +1808,9 @@
     .hc-section .carousel-btn:hover { background: rgba(255,255,255,.24); border-color: rgba(255,255,255,.5); }
 
     @media (max-width: 640px) {
-      .hc-hero { min-height: clamp(220px, 31vh, 300px); }
+      .hc-hero { min-height: clamp(250px, 35vh, 330px); }
       .hc-hero-inner {
-        padding: clamp(58px, 9vh, 82px) var(--section-heading-left) clamp(18px, 3vh, 28px);
+        padding: clamp(76px, 11vh, 104px) var(--section-heading-left) clamp(18px, 3vh, 28px);
       }
       .hc-title { font-size: clamp(30px, 10vw, 42px); }
       .hc-desc { font-size: 16px; line-height: 1.55; }
@@ -1825,9 +1825,9 @@
       .hc-section .carousel-controls { padding: 0 var(--section-heading-left) 24px; }
     }
     @media (max-height: 820px) and (min-width: 641px) {
-      .hc-hero { min-height: clamp(200px, 30vh, 280px); }
+      .hc-hero { min-height: clamp(230px, 34vh, 310px); }
       .hc-hero-inner {
-        padding-top: clamp(56px, 8vh, 80px);
+        padding-top: clamp(70px, 10vh, 96px);
         padding-bottom: clamp(16px, 2.6vh, 28px);
       }
       .hc-title { font-size: clamp(30px, min(4vw, 6vh), 46px); }
@@ -1837,7 +1837,7 @@
       .hc-section .carousel-controls { padding-bottom: 18px; }
     }
     @media (max-width: 640px) and (max-height: 760px) {
-      .hc-hero { min-height: clamp(190px, 29vh, 240px); }
+      .hc-hero { min-height: clamp(220px, 33vh, 260px); }
       .hc-title { font-size: clamp(28px, 9vw, 36px); }
       .hc-item { flex-basis: clamp(170px, 52vw, 210px); }
     }
@@ -1870,6 +1870,44 @@
       max-width: none;
       padding-left: var(--section-heading-left);
       padding-right: var(--section-heading-left);
+    }
+    #chapel.guide-scroll-section {
+      padding: clamp(44px, 6vh, 78px) 0;
+      min-height: 100vh;
+      min-height: 100svh;
+      position: relative;
+      display: flex;
+      align-items: center;
+    }
+    .pin-spacer-guideHorizontal {
+      background: var(--ds-color-mist);
+    }
+    #chapel .guide-sticky {
+      width: 100%;
+      min-height: 0;
+      display: block;
+    }
+    #chapel.guide-scroll-section .carousel-header {
+      margin-bottom: clamp(22px, 3vh, 38px);
+    }
+    #chapel.guide-scroll-section .carousel-track {
+      scroll-snap-type: none;
+      scroll-behavior: auto;
+    }
+    #chapel .carousel-track.guide-gsap-track {
+      overflow-x: hidden;
+      cursor: default;
+      touch-action: pan-y;
+      user-select: auto;
+    }
+    #chapel .guide-track-inner {
+      display: flex;
+      flex: 0 0 auto;
+      gap: clamp(20px, 3vw, 36px);
+      will-change: transform;
+    }
+    #chapel.guide-scroll-section .carousel-controls {
+      display: none;
     }
 
     /* Film 포스터 — 16:9 가로 3열 */
@@ -2227,6 +2265,10 @@
       flex-direction: column;
       gap: var(--ds-space-3);
     }
+    #chapel.guide-scroll-section .guide-item {
+      flex: 0 0 clamp(340px, min(58vw, 62vh), 520px);
+      max-width: clamp(340px, min(58vw, 62vh), 520px);
+    }
     .guide-img {
       width: 100%;
       aspect-ratio: 4 / 3;
@@ -2252,6 +2294,25 @@
       color: var(--ds-color-text);
       margin-bottom: 4px;
       letter-spacing: -0.022em;
+    }
+    @media (max-height: 820px) and (min-width: 641px) {
+      #chapel.guide-scroll-section {
+        padding: clamp(36px, 5vh, 58px) 0;
+      }
+      #chapel.guide-scroll-section .carousel-header {
+        margin-bottom: clamp(16px, 2.4vh, 28px);
+      }
+      #chapel.guide-scroll-section .guide-item {
+        flex-basis: clamp(320px, min(50vw, 56vh), 440px);
+        max-width: clamp(320px, min(50vw, 56vh), 440px);
+      }
+      #chapel .guide-caption {
+        font-size: 16px;
+        line-height: 1.55;
+      }
+      #chapel .guide-caption strong {
+        font-size: 18px;
+      }
     }
 
     .venue-card {
@@ -3185,6 +3246,10 @@
         max-width: calc(100vw - (var(--mobile-carousel-pad) * 2));
       }
 
+      #chapel .guide-track-inner {
+        gap: 16px;
+      }
+
       #chapel .guide-caption {
         padding: 0 4px;
       }
@@ -3297,7 +3362,7 @@
         </div>
         <div class="greeting-slide">
           <p>
-            <span class="greeting-line"><span class="greeting-fire">불<span class="greeting-emoji" aria-hidden="true">🔥</span></span>과 <span class="greeting-water">물<span class="greeting-emoji" aria-hidden="true">💦</span></span>처럼</span>
+            <span class="greeting-line"><span class="greeting-fire">불<span class="greeting-emoji" aria-hidden="true">🔥</span></span>과 <span class="greeting-water">물<span class="greeting-emoji" aria-hidden="true">💧</span></span>처럼</span>
             <span class="greeting-line">전혀 달랐던 두 사람이</span>
             <span class="greeting-line">같은 항공편에 오르게 되었습니다.</span>
           </p>
@@ -3642,46 +3707,43 @@
 <!-- ================================================================
      §8  WEDDING GUIDE
 ================================================================ -->
-<section id="chapel" class="carousel-section section-alt">
-  <div class="carousel-header reveal">
-    <div class="section-header">
-      <div class="label">Wedding Guide</div>
-      <h2>예식장 안내.</h2>
-      <p>식사, 주차, 포토부스 이용 안내를 확인해 주세요.</p>
-    </div>
-  </div>
-
-  <div class="carousel-track reveal" id="chapelTrack">
-
-    <div class="guide-item">
-      <div class="guide-img"><img src="gallery/optimized/dining.webp" alt="식사 안내" loading="lazy" decoding="async"></div>
-      <div class="guide-caption">
-        <strong>식사 안내.</strong>
-        예식 후 한 층 아래 4층에 식사가 준비되어 있습니다.
+<section id="chapel" class="carousel-section section-alt guide-scroll-section">
+  <div class="guide-sticky">
+    <div class="carousel-header reveal">
+      <div class="section-header">
+        <div class="label">Wedding Guide</div>
+        <h2>예식장 안내.</h2>
+        <p>식사, 주차, 포토부스 이용 안내를 확인해 주세요.</p>
       </div>
     </div>
 
-    <div class="guide-item">
-      <div class="guide-img"><img src="gallery/optimized/parking.webp" alt="주차 안내" loading="lazy" decoding="async"></div>
-      <div class="guide-caption">
-        <strong>주차 안내.</strong>
-        건물 내부 2층에서 하차하시면 발렛 기사님이 외부 주차장으로 주차해드립니다. 귀가 시 1층 로비 앞에서 셔틀버스로 외부 주차장까지 모셔드립니다.
+    <div class="carousel-track reveal guide-gsap-track" id="chapelTrack">
+
+      <div class="guide-item">
+        <div class="guide-img"><img src="gallery/optimized/dining.webp" alt="식사 안내" loading="lazy" decoding="async"></div>
+        <div class="guide-caption">
+          <strong>식사 안내.</strong>
+          예식 후 한 층 아래 4층에 식사가 준비되어 있습니다.
+        </div>
       </div>
-    </div>
 
-    <div class="guide-item">
-      <div class="guide-img"><img src="gallery/optimized/photobooth.webp" alt="포토부스 안내" loading="lazy" decoding="async"></div>
-      <div class="guide-caption">
-        <strong>포토부스 안내.</strong>
-        예식장 로비에 포토부스가 준비되어 있습니다. 소중한 순간을 사진으로 남겨주세요. 촬영 후 바로 인화하여 가져가실 수 있습니다.
+      <div class="guide-item">
+        <div class="guide-img"><img src="gallery/optimized/parking.webp" alt="주차 안내" loading="lazy" decoding="async"></div>
+        <div class="guide-caption">
+          <strong>주차 안내.</strong>
+          건물 내부 2층에서 하차하시면 발렛 기사님이 외부 주차장으로 주차해드립니다. 귀가 시 1층 로비 앞에서 셔틀버스로 외부 주차장까지 모셔드립니다.
+        </div>
       </div>
+
+      <div class="guide-item">
+        <div class="guide-img"><img src="gallery/optimized/photobooth.webp" alt="포토부스 안내" loading="lazy" decoding="async"></div>
+        <div class="guide-caption">
+          <strong>포토부스 안내.</strong>
+          예식장 로비에 포토부스가 준비되어 있습니다. 소중한 순간을 사진으로 남겨주세요. 촬영 후 바로 인화하여 가져가실 수 있습니다.
+        </div>
+      </div>
+
     </div>
-
-  </div>
-
-  <div class="carousel-controls">
-    <button class="carousel-btn" id="chapelPrev" aria-label="이전">‹</button>
-    <button class="carousel-btn" id="chapelNext" aria-label="다음">›</button>
   </div>
 </section>
 
@@ -4394,8 +4456,6 @@ function bindCarousel(trackId, prevId, nextId) {
   track.addEventListener('pointerleave', endDrag);
   sync();
 }
-bindCarousel('chapelTrack', 'chapelPrev', 'chapelNext');
-
 function bindStoryHorizontalScroll() {
   const section = document.getElementById('story');
   const track = document.getElementById('storyTrack');
@@ -4455,6 +4515,65 @@ function bindStoryHorizontalScroll() {
   window.requestAnimationFrame(() => ScrollTrigger.refresh());
 }
 bindStoryHorizontalScroll();
+
+function bindGuideHorizontalScroll() {
+  const section = document.getElementById('chapel');
+  const track = document.getElementById('chapelTrack');
+  if (!section || !track) return;
+
+  window.ScrollTrigger?.getById('guideHorizontal')?.kill();
+
+  let inner = track.querySelector('.guide-track-inner');
+  if (!inner) {
+    inner = document.createElement('div');
+    inner.className = 'guide-track-inner';
+    track.querySelectorAll(':scope > .guide-item').forEach(item => inner.appendChild(item));
+    track.appendChild(inner);
+  }
+
+  track.scrollLeft = 0;
+  if (!window.gsap || !window.ScrollTrigger) return;
+
+  gsap.set(inner, { x: 0 });
+
+  const maxX = () => {
+    gsap.set(inner, { x: 0 });
+    const styles = getComputedStyle(track);
+    const padRight = parseFloat(styles.paddingRight) || 0;
+    return Math.max(0, inner.offsetLeft + inner.scrollWidth - (track.clientWidth - padRight));
+  };
+  const scrollLength = () => Math.max(maxX(), window.innerHeight * 0.95);
+
+  gsap.to(inner, {
+    x: () => -maxX(),
+    ease: 'none',
+    scrollTrigger: {
+      id: 'guideHorizontal',
+      trigger: section,
+      start: 'top top',
+      end: () => `+=${scrollLength()}`,
+      pin: true,
+      scrub: 0.25,
+      anticipatePin: 1,
+      invalidateOnRefresh: true,
+      refreshPriority: 0,
+      onRefresh: () => {
+        track.scrollLeft = 0;
+      }
+    }
+  });
+
+  let refreshTimer = null;
+  const scheduleRefresh = () => {
+    window.clearTimeout(refreshTimer);
+    refreshTimer = window.setTimeout(() => {
+      ScrollTrigger.getById('guideHorizontal')?.refresh();
+    }, 140);
+  };
+  window.addEventListener('resize', scheduleRefresh);
+  window.requestAnimationFrame(() => ScrollTrigger.refresh());
+}
+bindGuideHorizontalScroll();
 
 function bindPlainMomentsCarousel() {
   const section = document.getElementById('moments');
@@ -4531,8 +4650,7 @@ function bindGreetingSlides() {
 function bindMobileCarouselResets() {
   const isMobile = () => window.matchMedia('(max-width: 640px)').matches;
   const targets = [
-    { section: 'moments', track: 'hcTrack2' },
-    { section: 'chapel', track: 'chapelTrack' }
+    { section: 'moments', track: 'hcTrack2' }
   ];
 
   const resetTrack = track => {
@@ -4584,57 +4702,6 @@ if (window.ScrollTrigger) {
     window.requestAnimationFrame(() => ScrollTrigger.refresh());
   });
 }
-
-function bindMobileCarouselResets() {
-  const isMobile = () => window.matchMedia('(max-width: 640px)').matches;
-  const targets = [
-    { section: 'moments', track: 'hcTrack2' },
-    { section: 'chapel', track: 'chapelTrack' }
-  ];
-
-  const resetTrack = track => {
-    if (!track) return;
-    track.scrollLeft = 0;
-    const inner = track.querySelector('.story-track-inner, .hc-track-inner');
-    if (inner && window.gsap) gsap.set(inner, { clearProps: 'transform' });
-  };
-
-  const resetAll = () => {
-    if (!isMobile()) return;
-    targets.forEach(({ track }) => resetTrack(document.getElementById(track)));
-  };
-  const scheduleResetAll = () => {
-    resetAll();
-    window.requestAnimationFrame(resetAll);
-    window.setTimeout(resetAll, 160);
-  };
-
-  scheduleResetAll();
-  window.addEventListener('load', scheduleResetAll);
-  window.addEventListener('pageshow', scheduleResetAll);
-  window.addEventListener('hashchange', scheduleResetAll);
-  window.addEventListener('orientationchange', () => window.setTimeout(scheduleResetAll, 250));
-
-  if (!('IntersectionObserver' in window)) return;
-
-  const entered = new Set();
-  const observer = new IntersectionObserver(entries => {
-    if (!isMobile()) return;
-    entries.forEach(entry => {
-      if (!entry.isIntersecting) return;
-      const item = targets.find(target => target.section === entry.target.id);
-      if (!item || entered.has(item.section)) return;
-      entered.add(item.section);
-      resetTrack(document.getElementById(item.track));
-    });
-  }, { threshold: 0.18 });
-
-  targets.forEach(({ section }) => {
-    const el = document.getElementById(section);
-    if (el) observer.observe(el);
-  });
-}
-bindMobileCarouselResets();
 
 /* ================================================================
    GALLERY + LIGHTBOX
