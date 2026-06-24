@@ -910,9 +910,33 @@
     }
     .greeting-reveal-word {
       display: inline-block;
+      position: relative;
       color: #0A84FF;
       font-weight: 900;
-      will-change: filter, opacity;
+      --reveal-blur: 1;
+      --reveal-sharp: 0;
+      color: transparent;
+      overflow: visible;
+      transform: translateZ(0);
+      will-change: opacity;
+    }
+    .greeting-reveal-word::before,
+    .greeting-reveal-word::after {
+      content: attr(data-text);
+      position: absolute;
+      inset: 0;
+      color: #0A84FF;
+      pointer-events: none;
+      transform: translateZ(0);
+    }
+    .greeting-reveal-word::before {
+      inset: -0.08em -0.14em;
+      text-indent: 0.14em;
+      filter: blur(4px);
+      opacity: var(--reveal-blur);
+    }
+    .greeting-reveal-word::after {
+      opacity: var(--reveal-sharp);
     }
     .greeting-fire {
       color: #D70015;
@@ -3357,7 +3381,7 @@
         <div class="greeting-slide is-active">
           <p>
             <span class="greeting-line">막연했던 <span class="greeting-highlight">사랑의 의미</span>를</span>
-            <span class="greeting-line"><span class="greeting-reveal-word">선명하게</span> 해준 사람을</span>
+            <span class="greeting-line"><span class="greeting-reveal-word" data-text="선명하게">선명하게</span> 해준 사람을</span>
             <span class="greeting-line">만났습니다.</span>
           </p>
         </div>
@@ -3438,7 +3462,7 @@
       <!-- 신랑 -->
       <div class="couple-block">
         <div class="couple-block-img">
-          <video data-src="gallery/groom.mp4" aria-label="신랑 조건희 어린 시절 영상" autoplay muted loop playsinline preload="none"></video>
+          <video data-src="gallery/optimized/groom-loop.mp4" aria-label="신랑 조건희 어린 시절 영상" autoplay muted loop playsinline preload="none"></video>
         </div>
         <div class="couple-block-text">
           <div class="couple-block-name">신랑</div>
@@ -3451,7 +3475,7 @@
       <!-- 신부 -->
       <div class="couple-block">
         <div class="couple-block-img">
-          <video data-src="gallery/bride.mp4" aria-label="신부 염혜경 어린 시절 영상" autoplay muted loop playsinline preload="none"></video>
+          <video data-src="gallery/optimized/bride-loop.mp4" aria-label="신부 염혜경 어린 시절 영상" autoplay muted loop playsinline preload="none"></video>
         </div>
         <div class="couple-block-text">
           <div class="couple-block-name">신부</div>
@@ -3497,7 +3521,7 @@
         </div>
         <div class="story-copy">
           <h3>보니스 피자에서 얼떨결에 단둘이</h3>
-          <p>전시 이후 갤러리 멤버가 끼리 식사 약속에서<br>다른 멤버들이 일정을 취소하게 되어 얼떨결에 단둘이 식사를 하게 되었어요.</p>
+          <p>전시 이후 갤러리 멤버 끼리 식사 약속에서<br>다른 멤버들이 일정을 취소하게 되어 얼떨결에 단둘이 식사를 하게 되었어요.</p>
           <div class="story-tag">2024. 3</div>
         </div>
       </div>
@@ -4618,7 +4642,7 @@ function bindGreetingSlides() {
   const revealWords = Array.from(section.querySelectorAll('.greeting-reveal-word'));
   gsap.set(slides, { autoAlpha: 0, y: 26 });
   gsap.set(slides[0], { autoAlpha: 1, y: 0 });
-  gsap.set(revealWords, { filter: 'blur(9px)', opacity: 0.52 });
+  gsap.set(revealWords, { '--reveal-blur': 1, '--reveal-sharp': 0 });
 
   const updateActive = progress => {
     const index = progress < 0.58 ? 0 : progress < 0.82 ? 1 : 2;
@@ -4641,7 +4665,7 @@ function bindGreetingSlides() {
     }
   });
 
-  tl.to(revealWords, { filter: 'blur(0px)', opacity: 1, duration: 0.2, ease: 'power2.out' }, 0.12)
+  tl.to(revealWords, { '--reveal-blur': 0, '--reveal-sharp': 1, duration: 0.18, ease: 'power2.out' }, 0.12)
     .to(slides[0], { autoAlpha: 0, y: -18, duration: 0.06 }, 0.54)
     .fromTo(slides[1], { autoAlpha: 0, y: 18 }, { autoAlpha: 1, y: 0, duration: 0.08 }, 0.58)
     .to(slides[1], { autoAlpha: 0, y: -18, duration: 0.06 }, 0.78)
