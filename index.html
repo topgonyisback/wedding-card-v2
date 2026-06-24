@@ -304,7 +304,7 @@
       color: inherit;
     }
     .feature-card .body {
-      font-size: 17px;
+      font-size: 19px;
       color: var(--ds-color-text-secondary);
       margin-top: var(--ds-space-2);
       line-height: 1.47;
@@ -427,14 +427,14 @@
       margin-bottom: 8px;
     }
     .couple-block-nickname {
-      font-size: 15px;
+      font-size: 17px;
       font-weight: 700;
       color: var(--ds-color-text);
       letter-spacing: -0.012em;
       margin-bottom: 6px;
     }
     .couple-block-parents {
-      font-size: 16px;
+      font-size: 18px;
       color: var(--ds-color-text-tertiary);
       letter-spacing: -0.01em;
       line-height: 1.45;
@@ -459,7 +459,7 @@
         font-size: 28px;
       }
       .couple-block-parents {
-        font-size: 13px;
+        font-size: 15px;
       }
     }
 
@@ -623,25 +623,55 @@
     }
     .intro-scroll-hint {
       position: absolute;
-      right: clamp(44px, 7vw, 104px);
-      bottom: clamp(52px, 8vh, 76px);
-      z-index: 5;
-      font-size: clamp(10px, 1vw, 13px);
+      left: 50%;
+      bottom: clamp(30px, 5vh, 54px);
+      z-index: 6;
+      display: inline-flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 9px;
+      font-size: clamp(11px, 1vw, 13px);
       font-weight: 700;
-      color: rgba(255,255,255,.82);
-      letter-spacing: .36em;
+      color: rgba(255,255,255,.88);
+      letter-spacing: .18em;
       text-transform: uppercase;
       white-space: nowrap;
       pointer-events: none;
+      text-shadow: 0 8px 28px rgba(0,0,0,.36);
+      transform: translateX(-50%);
+      will-change: opacity, transform;
+      animation: introScrollCue 1.55s var(--ds-ease) infinite;
     }
-    .intro-scroll-hint::before {
-      content: "";
-      display: inline-block;
-      width: clamp(120px, 22vw, 360px);
-      height: 1px;
-      margin-right: var(--ds-space-3);
-      vertical-align: middle;
-      background: rgba(255,255,255,.34);
+    .intro-scroll-icon {
+      width: 28px;
+      height: 28px;
+      border: 1px solid rgba(255,255,255,.62);
+      border-radius: 999px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(0,0,0,.16);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      box-shadow: 0 10px 28px rgba(0,0,0,.18);
+    }
+    .intro-scroll-icon svg {
+      width: 14px;
+      height: 14px;
+      stroke: currentColor;
+      stroke-width: 2;
+      fill: none;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+    @keyframes introScrollCue {
+      0%, 100% { transform: translate(-50%, 0); }
+      50% { transform: translate(-50%, 8px); }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .intro-scroll-hint {
+        animation: none;
+      }
     }
     @media (max-width: 760px) {
       #intro-hero {
@@ -677,9 +707,14 @@
         font-size: 14px;
       }
       .intro-scroll-hint {
-        display: none;
+        bottom: calc(22px + env(safe-area-inset-bottom));
+        font-size: 11px;
+        gap: 8px;
       }
-      .intro-scroll-hint::before { width: 80px; margin-right: var(--ds-space-2); }
+      .intro-scroll-icon {
+        width: 26px;
+        height: 26px;
+      }
     }
     @media (min-width: 761px) and (max-height: 760px) {
       #intro-hero {
@@ -1339,7 +1374,7 @@
       color: inherit;
     }
     .carousel-card p {
-      font-size: 15px;
+      font-size: 17px;
       color: var(--ds-color-text-secondary);
       margin-top: var(--ds-space-2);
       line-height: 1.5;
@@ -1383,26 +1418,45 @@
     }
     #story.story-scroll-section {
       padding: clamp(28px, 4.2vh, 58px) 0;
+      min-height: 100vh;
+      min-height: 100svh;
       position: relative;
+      display: flex;
+      align-items: center;
+    }
+    .pin-spacer-storyHorizontal {
+      background: #111;
     }
     #story .story-sticky {
       min-height: 0;
       padding: 0;
+      width: 100%;
       display: block;
+      transform: translateY(clamp(24px, 3vh, 40px));
     }
     #story.story-scroll-section .story-sticky {
       position: static;
       overflow: visible;
     }
     #story.story-scroll-section .carousel-track {
-      scroll-snap-type: x mandatory;
-      scroll-behavior: smooth;
+      scroll-snap-type: none;
+      scroll-behavior: auto;
+    }
+    #story .carousel-track.story-gsap-track {
+      overflow-x: hidden;
+      cursor: default;
+      touch-action: pan-y;
+      user-select: auto;
     }
     #story .story-track-inner {
       display: flex;
       flex: 0 0 auto;
       gap: clamp(20px, 3vw, 36px);
+      margin-left: 0;
       will-change: transform;
+    }
+    #story .carousel-controls {
+      display: none;
     }
     #story .carousel-header {
       margin-bottom: clamp(18px, 3vh, 42px);
@@ -1468,12 +1522,12 @@
       margin: 0;
     }
     #story .story-copy p {
-      font-size: clamp(14px, min(1.45vw, 2.4vh), 17px);
+      font-size: clamp(19px, min(1.9vw, 2.9vh), 22px);
       color: var(--ds-color-text-secondary);
-      line-height: 1.56;
+      line-height: 1.5;
       letter-spacing: -0.012em;
       margin-top: clamp(6px, 1.2vh, 12px);
-      max-width: 620px;
+      max-width: 720px;
     }
     #story .story-tag {
       font-family: var(--ds-font-mono);
@@ -1504,11 +1558,11 @@
       #story.story-scroll-section { padding: clamp(28px, 5vh, 52px) 0; }
       #story .carousel-header { margin-bottom: clamp(14px, 2.4vh, 26px); }
       #story .section-header h2 { font-size: clamp(30px, min(4.4vw, 6vh), 46px); }
-      #story .section-header p { font-size: clamp(14px, min(1.45vw, 2.2vh), 17px); }
+      #story .section-header p { font-size: clamp(16px, min(1.55vw, 2.35vh), 19px); }
       #story .carousel-card { flex-basis: clamp(340px, min(58vw, 66vh), 620px); }
       #story .story-media { height: clamp(180px, min(35vh, 31vw), 300px); }
       #story .story-copy h3 { font-size: clamp(20px, min(2vw, 3.7vh), 27px); }
-      #story .story-copy p { font-size: clamp(13px, min(1.25vw, 2vh), 15px); line-height: 1.42; }
+      #story .story-copy p { font-size: clamp(17px, min(1.62vw, 2.45vh), 20px); line-height: 1.42; }
       #story .story-tag { font-size: 11px; margin-top: 8px; }
     }
     @media (max-width: 640px) {
@@ -1527,15 +1581,15 @@
         padding-top: var(--ds-space-3);
       }
       #story .story-copy h3 { font-size: 22px; }
-      #story .story-copy p { font-size: 15px; }
+      #story .story-copy p { font-size: 19px; line-height: 1.46; }
     }
     @media (max-width: 640px) and (max-height: 760px) {
       #story.story-scroll-section { padding: 32px 0; }
       #story .section-header h2 { font-size: 30px; }
-      #story .section-header p { font-size: 14px; }
+      #story .section-header p { font-size: 16px; }
       #story .story-media { height: min(70vw, 30vh); }
       #story .story-copy h3 { font-size: 20px; }
-      #story .story-copy p { font-size: 14px; line-height: 1.44; }
+      #story .story-copy p { font-size: 18px; line-height: 1.42; }
     }
     .carousel-controls {
       max-width: var(--ds-container);
@@ -1670,7 +1724,7 @@
       white-space: nowrap;
     }
     .hc-desc {
-      font-size: 16px; line-height: 1.65;
+      font-size: 18px; line-height: 1.65;
       letter-spacing: -0.018em;
       color: rgba(255,255,255,.82);
       max-width: 480px;
@@ -1728,12 +1782,12 @@
     }
     .hc-item:hover .hc-img img { transform: scale(1.03); }
     .hc-caption {
-      font-size: clamp(13px, min(1.25vw, 2vh), 15px); line-height: 1.55;
+      font-size: clamp(15px, min(1.35vw, 2.15vh), 17px); line-height: 1.55;
       letter-spacing: -0.018em;
       color: rgba(255,255,255,.7);
     }
     .hc-caption strong {
-      display: block; font-size: clamp(14px, min(1.35vw, 2.2vh), 16px); font-weight: 700;
+      display: block; font-size: clamp(16px, min(1.5vw, 2.35vh), 18px); font-weight: 700;
       color: rgba(255,255,255,.95);
       margin-bottom: 4px;
       letter-spacing: -0.02em;
@@ -1759,7 +1813,7 @@
         padding: clamp(58px, 9vh, 82px) var(--section-heading-left) clamp(18px, 3vh, 28px);
       }
       .hc-title { font-size: clamp(30px, 10vw, 42px); }
-      .hc-desc { font-size: 14px; line-height: 1.55; }
+      .hc-desc { font-size: 16px; line-height: 1.55; }
       .hc-item { flex: 0 0 clamp(190px, 58vw, 240px); }
       .hc-track {
         overflow-x: auto;
@@ -1777,7 +1831,7 @@
         padding-bottom: clamp(16px, 2.6vh, 28px);
       }
       .hc-title { font-size: clamp(30px, min(4vw, 6vh), 46px); }
-      .hc-desc { font-size: 14px; line-height: 1.48; }
+      .hc-desc { font-size: 16px; line-height: 1.48; }
       .hc-track { padding-top: 10px; padding-bottom: 18px; }
       .hc-item { flex-basis: clamp(190px, min(20vw, 29vh), 260px); }
       .hc-section .carousel-controls { padding-bottom: 18px; }
@@ -2064,7 +2118,7 @@
       max-width: 520px;
     }
     .chapel-panel p {
-      font-size: 17px;
+      font-size: 19px;
       color: var(--ds-color-text-secondary);
       line-height: 1.65;
       letter-spacing: -0.018em;
@@ -2143,7 +2197,7 @@
       letter-spacing: -0.018em;
     }
     .chapel-visual-caption .caption-sub {
-      font-size: 15px;
+      font-size: 17px;
       color: rgba(255,255,255,.7);
       line-height: 1.55;
       letter-spacing: -0.012em;
@@ -2185,7 +2239,7 @@
       object-fit: cover; display: block;
     }
     .guide-caption {
-      font-size: 15px;
+      font-size: 17px;
       line-height: 1.65;
       letter-spacing: -0.022em;
       color: var(--ds-color-text-secondary);
@@ -2193,7 +2247,7 @@
     }
     .guide-caption strong {
       display: block;
-      font-size: 17px;
+      font-size: 19px;
       font-weight: 700;
       color: var(--ds-color-text);
       margin-bottom: 4px;
@@ -2226,14 +2280,14 @@
       line-height: 1.2;
     }
     .venue-field .field-sub {
-      font-size: 15px;
+      font-size: 17px;
       color: var(--ds-color-text-secondary);
       margin-top: 4px;
       letter-spacing: -0.012em;
       line-height: 1.5;
     }
     .venue-divider { height: 1px; background: var(--ds-color-divider-light); }
-    .venue-transport p { font-size: 15px; color: var(--ds-color-text-secondary); line-height: 1.8; letter-spacing: -0.012em; }
+    .venue-transport p { font-size: 17px; color: var(--ds-color-text-secondary); line-height: 1.8; letter-spacing: -0.012em; }
     .venue-map-links {
       display: grid;
       grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -2295,7 +2349,7 @@
       border: 1px solid var(--ds-color-divider);
       border-radius: var(--ds-radius-sm);
       font-family: inherit;
-      font-size: 17px;
+      font-size: 18px;
       letter-spacing: -0.022em;
       color: var(--ds-color-text);
       background: var(--ds-color-paper);
@@ -2345,7 +2399,7 @@
       margin-bottom: var(--ds-space-4);
     }
     .account-bank {
-      font-size: 15px;
+      font-size: 17px;
       color: var(--ds-color-text-secondary);
       letter-spacing: -0.012em;
       margin-bottom: 6px;
@@ -2364,7 +2418,7 @@
     .account-feedback {
       min-height: 20px;
       margin-top: var(--ds-space-2);
-      font-size: 14px;
+      font-size: 16px;
       color: var(--ds-color-signal);
       letter-spacing: -0.012em;
       opacity: 0;
@@ -2486,7 +2540,7 @@
     .account-modal .account-bank {
       grid-column: 1;
       color: var(--ds-color-on-dark-secondary);
-      font-size: 13px;
+      font-size: 15px;
       margin-bottom: 3px;
     }
     .account-modal .account-number {
@@ -2525,7 +2579,7 @@
       border: 1px solid rgba(255,255,255,.14);
       backdrop-filter: blur(12px);
       -webkit-backdrop-filter: blur(12px);
-      font-size: 14px;
+      font-size: 16px;
       letter-spacing: -0.014em;
       opacity: 0;
       pointer-events: none;
@@ -2571,7 +2625,7 @@
       }
       .account-modal .account-copy {
         padding: 10px 12px;
-        font-size: 13px;
+        font-size: 15px;
       }
     }
 
@@ -2616,7 +2670,7 @@
     .gb-form .form-field input {
       min-height: 52px;
       padding: 13px 18px;
-      font-size: 16px;
+      font-size: 18px;
     }
     .gb-form .form-field input::placeholder,
     .gb-form .form-field textarea::placeholder { color: rgba(245,245,247,.38); }
@@ -2632,7 +2686,7 @@
       max-height: 180px;
       padding: 16px 18px;
       font-family: inherit;
-      font-size: 16px;
+      font-size: 18px;
       line-height: 1.55;
       letter-spacing: -0.022em;
       outline: none;
@@ -2661,7 +2715,7 @@
       min-height: 20px;
       margin-top: 14px;
       text-align: center;
-      font-size: 14px;
+      font-size: 16px;
       color: #6FB6FF;
       letter-spacing: -0.014em;
       opacity: 0;
@@ -2691,10 +2745,10 @@
       to { opacity: 1; transform: translateY(0) scale(1); }
     }
     .gb-card:hover { background: rgba(255,255,255,.08); }
-    .gb-name { font-size: 15px; font-weight: 700; color: var(--ds-color-on-dark); margin-bottom: var(--ds-space-1); letter-spacing: -0.018em; overflow-wrap: anywhere; }
-    .gb-msg  { font-size: 15px; color: var(--ds-color-on-dark-secondary); line-height: 1.5; letter-spacing: -0.012em; overflow: hidden; overflow-wrap: anywhere; display: -webkit-box; -webkit-line-clamp: 4; -webkit-box-orient: vertical; }
+    .gb-name { font-size: 17px; font-weight: 700; color: var(--ds-color-on-dark); margin-bottom: var(--ds-space-1); letter-spacing: -0.018em; overflow-wrap: anywhere; }
+    .gb-msg  { font-size: 17px; color: var(--ds-color-on-dark-secondary); line-height: 1.5; letter-spacing: -0.012em; overflow: hidden; overflow-wrap: anywhere; display: -webkit-box; -webkit-line-clamp: 4; -webkit-box-orient: vertical; }
     .gb-date { font-family: var(--ds-font-mono); font-size: 12px; color: var(--ds-color-on-dark-tertiary); margin-top: var(--ds-space-2); }
-    .gb-empty { grid-column:1/-1; text-align:center; color: var(--ds-color-on-dark-tertiary); font-size:15px; padding: var(--ds-space-8) 0; letter-spacing:-0.012em; }
+    .gb-empty { grid-column:1/-1; text-align:center; color: var(--ds-color-on-dark-tertiary); font-size:17px; padding: var(--ds-space-8) 0; letter-spacing:-0.012em; }
     #guestbook.gb-empty-state {
       padding-bottom: clamp(64px, 8vw, 96px);
     }
@@ -2786,7 +2840,7 @@
       margin-bottom: var(--ds-space-3);
     }
     .guestbook-modal-count {
-      font-size: 15px;
+      font-size: 17px;
       color: var(--ds-color-on-dark-secondary);
       letter-spacing: -0.014em;
     }
@@ -2831,7 +2885,7 @@
         flex: 0 1 auto;
         min-width: 0;
         padding: 12px 14px;
-        font-size: 14px;
+        font-size: 16px;
       }
       .guestbook-modal .modal-body {
         width: calc(100vw - 36px);
@@ -3014,13 +3068,13 @@
       color: var(--ds-color-text); margin-bottom: var(--ds-space-1);
     }
     .modal p {
-      font-size: 15px; color: var(--ds-color-text-secondary);
+      font-size: 17px; color: var(--ds-color-text-secondary);
       line-height: 1.5; letter-spacing: -0.012em;
     }
     .modal-actions { display: flex; border-top: 1px solid var(--ds-color-divider-light); }
     .modal-btn {
       flex: 1; background: transparent; border: none;
-      padding: 16px; font-family: inherit; font-size: 16px;
+      padding: 16px; font-family: inherit; font-size: 17px;
       font-weight: 500; color: var(--ds-color-signal);
       cursor: pointer; letter-spacing: -0.018em;
       transition: background var(--ds-duration-fast);
@@ -3115,7 +3169,6 @@
 
       #story .story-track-inner {
         gap: 16px;
-        transform: none !important;
       }
 
       #story .carousel-card {
@@ -3165,8 +3218,8 @@
       #hero-content h1 { font-size: 44px; }
       .couple-block-text { padding: 12px; }
       .couple-block-title { font-size: 21px; }
-      .couple-block-nickname { font-size: 12px; }
-      .couple-block-parents { font-size: 12px; }
+      .couple-block-nickname { font-size: 14px; }
+      .couple-block-parents { font-size: 14px; }
       .cd-num { font-size: 34px; }
     }
   </style>
@@ -3216,6 +3269,15 @@
     <figure class="intro-photo right-outer">
       <img src="gallery/optimized/Wedding_Snapshots8.webp" alt="" width="1200" height="2140" decoding="async">
     </figure>
+    <div class="intro-scroll-hint" aria-hidden="true">
+      <span>Scroll</span>
+      <span class="intro-scroll-icon">
+        <svg viewBox="0 0 24 24" focusable="false" aria-hidden="true">
+          <path d="M12 5v14"></path>
+          <path d="m6 13 6 6 6-6"></path>
+        </svg>
+      </span>
+    </div>
   </div>
 </section>
 
@@ -3349,7 +3411,7 @@
       </div>
     </div>
 
-    <div class="carousel-track" id="storyTrack">
+    <div class="carousel-track story-gsap-track" id="storyTrack">
       <div class="carousel-card">
         <div class="story-media">
           <img src="gallery/optimized/gallery-eden.webp" alt="갤러리이든 전시에서의 첫 만남" loading="lazy" decoding="async">
@@ -3357,7 +3419,7 @@
         </div>
         <div class="story-copy">
           <h3>처음 만났던 하동근 과장님 개인전</h3>
-          <p>직장 동료의 개인전을 보러 갔던 갤러리 이든에서 우연히 저희 두사람은 서로를 처음 마주했어요.</p>
+          <p>직장 동료의 개인전을 보러 갔던 갤러리 이든에서<br>우연히 저희 두사람은 서로를 처음 마주했어요.</p>
           <div class="story-tag">2023. 11. 5</div>
         </div>
       </div>
@@ -3368,7 +3430,7 @@
         </div>
         <div class="story-copy">
           <h3>보니스 피자에서 얼떨결에 단둘이</h3>
-          <p>전시 이후 갤러리 멤버가 끼리 식사 약속에서 다른 멤버들이 일정을 취소하게 되어 얼떨결에 단둘이 식사를 하게 되었어요.</p>
+          <p>전시 이후 갤러리 멤버가 끼리 식사 약속에서<br>다른 멤버들이 일정을 취소하게 되어 얼떨결에 단둘이 식사를 하게 되었어요.</p>
           <div class="story-tag">2024. 3</div>
         </div>
       </div>
@@ -3379,7 +3441,7 @@
         </div>
         <div class="story-copy">
           <h3>전시를 보자고 꼬셨어요.</h3>
-          <p>용기를 내 그녀와 전시를 보러 가자고 제안 했어요. 역시 그날 전시는 눈에 하나도 안들어왔어요.</p>
+          <p>용기를 내 그녀와 전시를 보러 가자고 제안 했어요.<br>역시 그날 전시는 눈에 하나도 안들어왔어요.</p>
           <div class="story-tag">2024 · 03</div>
         </div>
       </div>
@@ -3390,7 +3452,7 @@
         </div>
         <div class="story-copy">
           <h3>포켓몬고로 더욱 가까워진 우리</h3>
-          <p>포켓몬을 함께 잡자는 핑계로 그녀에게 계속 연락을 했습니다. 혹시 눈치 챌까봐 정말 열심히 포켓몬만 잡았어요.</p>
+          <p>포켓몬을 함께 잡자는 핑계로 그녀에게 계속 연락을 했습니다.<br>혹시 눈치 챌까봐 정말 열심히 포켓몬만 잡았어요.</p>
           <div class="story-tag">2024 · 03</div>
         </div>
       </div>
@@ -3401,7 +3463,7 @@
         </div>
         <div class="story-copy">
           <h3>석촌호수에서 잡은 손</h3>
-          <p>그렇게 포켓몬을 신나게 잡던 석촌호수에서 그녀의 손도 덜컥 잡았어요. 그렇게 저희는 시작 했습니다.</p>
+          <p>그렇게 포켓몬을 신나게 잡던 석촌호수에서 그녀의 손도 덜컥 잡았어요.<br>그렇게 저희는 시작 했습니다.</p>
           <div class="story-tag">2024 · 04 · 28</div>
         </div>
       </div>
@@ -3932,6 +3994,7 @@ function bindIntroHeroMotion() {
   const center = section.querySelector('.intro-photo.center');
   const centerImg = center?.querySelector('img');
   const copy = section.querySelector('.intro-copy');
+  const scrollHint = section.querySelector('.intro-scroll-hint');
   const nav = document.getElementById('main-nav');
   const sidePhotos = Array.from(section.querySelectorAll('.intro-photo:not(.center)'));
   if (!stage || !center || !centerImg || !copy) return;
@@ -4025,6 +4088,9 @@ function bindIntroHeroMotion() {
       center.style.transform = 'translate(-50%, -50%) translate3d(0, 0, 0)';
       centerImg.style.transform = 'scale(1)';
       copy.style.transform = 'translate(-50%, -50%) scale(1)';
+      if (scrollHint) {
+        scrollHint.style.opacity = '1';
+      }
       sidePhotos.forEach(photo => {
         photo.style.opacity = '0';
         photo.style.transform = 'translate3d(0, 0, 0)';
@@ -4040,6 +4106,7 @@ function bindIntroHeroMotion() {
 
     const centerProgress = easeOutCubic(renderedProgress);
     const sideProgress = easeOutCubic(clamp((renderedProgress - 0.04) / 0.74));
+    const hintOpacity = 1 - easeOutCubic(clamp(renderedProgress / 0.26));
     const width = lerp(frameWidth(), finalCenterWidth(), centerProgress);
     const height = frameHeight();
     const radius = lerp(18, finalRadius(), centerProgress);
@@ -4053,6 +4120,9 @@ function bindIntroHeroMotion() {
     center.style.transform = `translate(-50%, -50%) translate3d(0, ${centerY}px, 0)`;
     centerImg.style.transform = `scale(${imageScale})`;
     copy.style.transform = `translate(-50%, -50%) scale(${copyScale})`;
+    if (scrollHint) {
+      scrollHint.style.opacity = `${hintOpacity}`;
+    }
     setIntroNav(renderedProgress);
 
     sidePhotos.forEach(photo => {
@@ -4324,10 +4394,9 @@ function bindCarousel(trackId, prevId, nextId) {
   track.addEventListener('pointerleave', endDrag);
   sync();
 }
-bindCarousel('storyTrack', 'storyPrev', 'storyNext');
 bindCarousel('chapelTrack', 'chapelPrev', 'chapelNext');
 
-function bindPlainStoryScroll() {
+function bindStoryHorizontalScroll() {
   const section = document.getElementById('story');
   const track = document.getElementById('storyTrack');
   if (!section || !track) return;
@@ -4343,11 +4412,49 @@ function bindPlainStoryScroll() {
   }
 
   track.scrollLeft = 0;
-  inner.style.transform = '';
-  window.gsap?.set(inner, { clearProps: 'transform' });
-  window.requestAnimationFrame(() => window.dispatchEvent(new Event('resize')));
+  inner.style.marginLeft = '';
+  if (!window.gsap || !window.ScrollTrigger) return;
+
+  gsap.set(inner, { x: 0, clearProps: 'marginLeft' });
+
+  const maxX = () => {
+    gsap.set(inner, { x: 0 });
+    const styles = getComputedStyle(track);
+    const padRight = parseFloat(styles.paddingRight) || 0;
+    return Math.max(0, inner.offsetLeft + inner.scrollWidth - (track.clientWidth - padRight));
+  };
+  const scrollLength = () => Math.max(maxX(), window.innerHeight * 1.1);
+
+  gsap.to(inner, {
+    x: () => -maxX(),
+    ease: 'none',
+    scrollTrigger: {
+      id: 'storyHorizontal',
+      trigger: section,
+      start: 'top top',
+      end: () => `+=${scrollLength()}`,
+      pin: true,
+      scrub: 0.25,
+      anticipatePin: 1,
+      invalidateOnRefresh: true,
+      refreshPriority: 0,
+      onRefresh: () => {
+        track.scrollLeft = 0;
+      }
+    }
+  });
+
+  let refreshTimer = null;
+  const scheduleRefresh = () => {
+    window.clearTimeout(refreshTimer);
+    refreshTimer = window.setTimeout(() => {
+      ScrollTrigger.getById('storyHorizontal')?.refresh();
+    }, 140);
+  };
+  window.addEventListener('resize', scheduleRefresh);
+  window.requestAnimationFrame(() => ScrollTrigger.refresh());
 }
-bindPlainStoryScroll();
+bindStoryHorizontalScroll();
 
 function bindPlainMomentsCarousel() {
   const section = document.getElementById('moments');
@@ -4424,7 +4531,6 @@ function bindGreetingSlides() {
 function bindMobileCarouselResets() {
   const isMobile = () => window.matchMedia('(max-width: 640px)').matches;
   const targets = [
-    { section: 'story', track: 'storyTrack' },
     { section: 'moments', track: 'hcTrack2' },
     { section: 'chapel', track: 'chapelTrack' }
   ];
@@ -4482,7 +4588,6 @@ if (window.ScrollTrigger) {
 function bindMobileCarouselResets() {
   const isMobile = () => window.matchMedia('(max-width: 640px)').matches;
   const targets = [
-    { section: 'story', track: 'storyTrack' },
     { section: 'moments', track: 'hcTrack2' },
     { section: 'chapel', track: 'chapelTrack' }
   ];
