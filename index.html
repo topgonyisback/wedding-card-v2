@@ -3256,6 +3256,26 @@
         gap: 16px;
       }
 
+      #story .carousel-track.story-gsap-track,
+      #chapel .carousel-track.guide-gsap-track {
+        overflow-x: auto;
+        scroll-snap-type: x mandatory;
+        touch-action: pan-x pan-y;
+        -webkit-overflow-scrolling: touch;
+        cursor: grab;
+      }
+
+      #story .story-track-inner,
+      #chapel .guide-track-inner {
+        transform: none !important;
+      }
+
+      #story .carousel-controls {
+        display: flex;
+        padding-left: var(--mobile-carousel-pad);
+        padding-right: var(--mobile-carousel-pad);
+      }
+
       #story .carousel-card {
         flex-basis: calc(100vw - (var(--mobile-carousel-pad) * 2));
         max-width: calc(100vw - (var(--mobile-carousel-pad) * 2));
@@ -4499,7 +4519,10 @@ function bindStoryHorizontalScroll() {
 
   track.scrollLeft = 0;
   inner.style.marginLeft = '';
-  if (!window.gsap || !window.ScrollTrigger) return;
+  window.gsap?.set(inner, { x: 0, clearProps: 'transform,marginLeft' });
+
+  const useNativeMobileScroll = window.matchMedia('(max-width: 640px)').matches;
+  if (useNativeMobileScroll || !window.gsap || !window.ScrollTrigger) return;
 
   gsap.set(inner, { x: 0, clearProps: 'marginLeft' });
 
@@ -4530,17 +4553,10 @@ function bindStoryHorizontalScroll() {
     }
   });
 
-  let refreshTimer = null;
-  const scheduleRefresh = () => {
-    window.clearTimeout(refreshTimer);
-    refreshTimer = window.setTimeout(() => {
-      ScrollTrigger.getById('storyHorizontal')?.refresh();
-    }, 140);
-  };
-  window.addEventListener('resize', scheduleRefresh);
   window.requestAnimationFrame(() => ScrollTrigger.refresh());
 }
 bindStoryHorizontalScroll();
+bindCarousel('storyTrack', 'storyPrev', 'storyNext');
 
 function bindGuideHorizontalScroll() {
   const section = document.getElementById('chapel');
@@ -4558,7 +4574,10 @@ function bindGuideHorizontalScroll() {
   }
 
   track.scrollLeft = 0;
-  if (!window.gsap || !window.ScrollTrigger) return;
+  window.gsap?.set(inner, { x: 0, clearProps: 'transform' });
+
+  const useNativeMobileScroll = window.matchMedia('(max-width: 640px)').matches;
+  if (useNativeMobileScroll || !window.gsap || !window.ScrollTrigger) return;
 
   gsap.set(inner, { x: 0 });
 
@@ -4589,17 +4608,29 @@ function bindGuideHorizontalScroll() {
     }
   });
 
-  let refreshTimer = null;
-  const scheduleRefresh = () => {
-    window.clearTimeout(refreshTimer);
-    refreshTimer = window.setTimeout(() => {
-      ScrollTrigger.getById('guideHorizontal')?.refresh();
-    }, 140);
-  };
-  window.addEventListener('resize', scheduleRefresh);
   window.requestAnimationFrame(() => ScrollTrigger.refresh());
 }
 bindGuideHorizontalScroll();
+
+let horizontalModeIsMobile = window.matchMedia('(max-width: 640px)').matches;
+let horizontalModeTimer = null;
+function refreshHorizontalScrollMode() {
+  window.clearTimeout(horizontalModeTimer);
+  horizontalModeTimer = window.setTimeout(() => {
+    const nextIsMobile = window.matchMedia('(max-width: 640px)').matches;
+    if (nextIsMobile !== horizontalModeIsMobile) {
+      horizontalModeIsMobile = nextIsMobile;
+      bindStoryHorizontalScroll();
+      bindGuideHorizontalScroll();
+      window.requestAnimationFrame(() => window.ScrollTrigger?.refresh());
+      return;
+    }
+    window.ScrollTrigger?.getById('storyHorizontal')?.refresh();
+    window.ScrollTrigger?.getById('guideHorizontal')?.refresh();
+  }, 160);
+}
+window.addEventListener('resize', refreshHorizontalScrollMode);
+window.visualViewport?.addEventListener('resize', refreshHorizontalScrollMode);
 
 function bindPlainMomentsCarousel() {
   const section = document.getElementById('moments');
