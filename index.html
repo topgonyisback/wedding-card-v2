@@ -21,6 +21,17 @@
   <link rel="canonical" href="https://topgonyisback.github.io/wedding-card-v2/">
   <title>건희 그리고 혜경</title>
 
+  <script>
+    (function () {
+      const platform = navigator.platform || '';
+      const ua = navigator.userAgent || '';
+      const isIOS = /iPad|iPhone|iPod/.test(platform) ||
+        (platform === 'MacIntel' && navigator.maxTouchPoints > 1) ||
+        /iPad|iPhone|iPod/.test(ua);
+      if (isIOS) document.documentElement.classList.add('is-ios-webkit');
+    })();
+  </script>
+
   <!-- GSAP ScrollTrigger -->
   <script src="vendor/gsap/gsap.min.js"></script>
   <script src="vendor/gsap/ScrollTrigger.min.js"></script>
@@ -96,6 +107,11 @@
     html   { overflow-x: clip; }
     @supports not (overflow: clip) {
       body, html { overflow-x: hidden; }
+    }
+    html.is-ios-webkit,
+    html.is-ios-webkit body {
+      overflow-x: hidden;
+      scroll-behavior: auto;
     }
     img    { display: block; max-width: 100%; }
     a      { color: inherit; text-decoration: none; }
@@ -3314,6 +3330,21 @@
         scroll-snap-align: start;
       }
 
+      html.is-ios-webkit #story .carousel-track.story-gsap-track,
+      html.is-ios-webkit #chapel .carousel-track.guide-gsap-track,
+      html.is-ios-webkit #moments .hc-track {
+        scroll-snap-type: none;
+        touch-action: auto;
+        overscroll-behavior-x: auto;
+        -webkit-overflow-scrolling: touch;
+      }
+
+      html.is-ios-webkit #story .carousel-card,
+      html.is-ios-webkit #chapel .guide-item,
+      html.is-ios-webkit #moments .hc-item {
+        scroll-snap-align: none;
+      }
+
       .hc-track-inner {
         transform: none !important;
       }
@@ -4001,6 +4032,7 @@ const CONFIG = {
   },
   ogImageUrl: ""
 };
+const isIOSWebKit = document.documentElement.classList.contains('is-ios-webkit');
 
 /* ================================================================
    INIT — SDKs are loaded only when their section needs them.
@@ -4279,7 +4311,9 @@ function bindIntroHeroMotion() {
   window.addEventListener('scroll', scheduleRender, { passive: true });
   window.addEventListener('resize', sync);
   window.addEventListener('orientationchange', () => window.setTimeout(sync, 160));
-  window.visualViewport?.addEventListener('resize', sync);
+  if (!isIOSWebKit) {
+    window.visualViewport?.addEventListener('resize', sync);
+  }
   section.querySelectorAll('img').forEach(img => {
     if (!img.complete) img.addEventListener('load', sync, { once: true });
   });
@@ -4641,7 +4675,9 @@ function refreshHorizontalScrollMode() {
   }, 160);
 }
 window.addEventListener('resize', refreshHorizontalScrollMode);
-window.visualViewport?.addEventListener('resize', refreshHorizontalScrollMode);
+if (!isIOSWebKit) {
+  window.visualViewport?.addEventListener('resize', refreshHorizontalScrollMode);
+}
 
 function bindPlainMomentsCarousel() {
   const section = document.getElementById('moments');
