@@ -3333,10 +3333,11 @@
       html.is-ios-webkit #story .carousel-track.story-gsap-track,
       html.is-ios-webkit #chapel .carousel-track.guide-gsap-track,
       html.is-ios-webkit #moments .hc-track {
+        overflow-x: hidden;
         scroll-snap-type: none;
-        touch-action: auto;
+        touch-action: pan-y;
         overscroll-behavior-x: auto;
-        -webkit-overflow-scrolling: touch;
+        -webkit-overflow-scrolling: auto;
       }
 
       html.is-ios-webkit #story .carousel-card,
@@ -4504,7 +4505,7 @@ function bindCarousel(trackId, prevId, nextId) {
   };
   const moveBy = amount => {
     const left = Math.max(0, Math.min(track.scrollWidth - track.clientWidth, track.scrollLeft + amount));
-    if (track.scrollTo) {
+    if (track.scrollTo && !isIOSWebKit) {
       track.scrollTo({ left, behavior: 'smooth' });
     } else {
       track.scrollLeft = left;
