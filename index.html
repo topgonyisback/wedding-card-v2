@@ -3307,9 +3307,11 @@
       }
 
       #moments .hc-track {
-        overflow-x: hidden;
-        touch-action: pan-y;
-        -webkit-overflow-scrolling: auto;
+        scroll-snap-type: x proximity;
+      }
+
+      #moments .hc-item {
+        scroll-snap-align: start;
       }
 
       .hc-track-inner {
@@ -4428,14 +4430,17 @@ function bindHcNav(trackId, prevId, nextId) {
     const gap = Number.parseFloat(getComputedStyle(inner || track).gap) || 0;
     return (item ? item.offsetWidth : track.clientWidth * 0.75) + gap;
   };
+  const maxScroll = () => Math.max(0, track.scrollWidth - track.clientWidth);
   const sync = () => {
     prev.disabled = track.scrollLeft <= 4;
-    next.disabled = track.scrollLeft + track.clientWidth >= track.scrollWidth - 4;
+    next.disabled = track.scrollLeft >= maxScroll() - 4;
   };
   const moveBy = amount => {
-    const left = Math.max(0, Math.min(track.scrollWidth - track.clientWidth, track.scrollLeft + amount));
+    const left = Math.max(0, Math.min(maxScroll(), track.scrollLeft + amount));
     track.scrollLeft = left;
     sync();
+    window.requestAnimationFrame(sync);
+    window.setTimeout(sync, 160);
   };
 
   prev.addEventListener('click', () => moveBy(-step()));
