@@ -692,17 +692,23 @@
     @media (max-width: 760px) {
       #intro-hero {
         --intro-frame-gap: 12px;
+        height: 100vh;
+        height: 100dvh;
         height: 100svh;
         min-height: 0;
         overflow: hidden;
       }
       .intro-stage {
         position: relative;
+        height: 100vh;
+        height: 100dvh;
         height: 100svh;
         min-height: 0;
       }
       .intro-photo.center {
         width: calc(100vw - (var(--intro-frame-gap) * 2));
+        height: calc(100vh - (var(--intro-frame-gap) * 2));
+        height: calc(100dvh - (var(--intro-frame-gap) * 2));
         height: calc(100svh - (var(--intro-frame-gap) * 2));
       }
       .intro-photo.left-outer,
@@ -4487,6 +4493,46 @@ function bindHcNav(trackId, prevId, nextId) {
 bindHcNav('hcTrack',  'hcPrev',  'hcNext');
 bindHcNav('hcTrack2', 'hcPrev2', 'hcNext2');
 
+function bindIOSCarouselTouchGuard() {
+  if (!isIOSWebKit) return;
+  const tracks = ['storyTrack', 'hcTrack2', 'chapelTrack']
+    .map(id => document.getElementById(id))
+    .filter(Boolean);
+
+  tracks.forEach(track => {
+    let startX = 0;
+    let startY = 0;
+    let startLeft = 0;
+    let lockedAxis = '';
+
+    track.addEventListener('touchstart', event => {
+      const touch = event.touches && event.touches[0];
+      if (!touch) return;
+      startX = touch.clientX;
+      startY = touch.clientY;
+      startLeft = track.scrollLeft;
+      lockedAxis = '';
+    }, { passive: true });
+
+    track.addEventListener('touchmove', event => {
+      const touch = event.touches && event.touches[0];
+      if (!touch) return;
+      const dx = touch.clientX - startX;
+      const dy = touch.clientY - startY;
+
+      if (!lockedAxis && Math.max(Math.abs(dx), Math.abs(dy)) > 8) {
+        lockedAxis = Math.abs(dx) > Math.abs(dy) ? 'x' : 'y';
+      }
+
+      if (lockedAxis === 'x') {
+        event.preventDefault();
+        track.scrollLeft = startLeft;
+      }
+    }, { passive: false });
+  });
+}
+bindIOSCarouselTouchGuard();
+
 /* ================================================================
    CAROUSEL
 ================================================================ */
@@ -4567,7 +4613,7 @@ function bindStoryHorizontalScroll() {
   inner.style.marginLeft = '';
   window.gsap?.set(inner, { x: 0, clearProps: 'transform,marginLeft' });
 
-  const useNativeMobileScroll = window.matchMedia('(max-width: 640px)').matches;
+  const useNativeMobileScroll = isIOSWebKit || window.matchMedia('(max-width: 640px)').matches;
   if (useNativeMobileScroll || !window.gsap || !window.ScrollTrigger) return;
 
   gsap.set(inner, { x: 0, clearProps: 'marginLeft' });
@@ -4622,7 +4668,7 @@ function bindGuideHorizontalScroll() {
   track.scrollLeft = 0;
   window.gsap?.set(inner, { x: 0, clearProps: 'transform' });
 
-  const useNativeMobileScroll = window.matchMedia('(max-width: 640px)').matches;
+  const useNativeMobileScroll = isIOSWebKit || window.matchMedia('(max-width: 640px)').matches;
   if (useNativeMobileScroll || !window.gsap || !window.ScrollTrigger) return;
 
   gsap.set(inner, { x: 0 });
