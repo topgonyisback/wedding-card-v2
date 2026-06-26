@@ -1027,6 +1027,36 @@
         margin-top: 34px;
       }
     }
+    html.is-ios-webkit #greeting {
+      min-height: auto;
+      padding-bottom: clamp(36px, 8vh, 72px);
+    }
+    html.is-ios-webkit .greeting-pin {
+      position: relative;
+      top: auto;
+      height: auto;
+      min-height: 0;
+      padding: clamp(88px, 16vh, 140px) 0 clamp(48px, 9vh, 88px);
+    }
+    html.is-ios-webkit .greeting-frame {
+      min-height: 0;
+      display: block;
+      overflow: visible;
+    }
+    html.is-ios-webkit .greeting-slide {
+      position: relative;
+      inset: auto;
+      display: block;
+      opacity: 1 !important;
+      transform: none !important;
+      pointer-events: auto;
+    }
+    html.is-ios-webkit .greeting-slide + .greeting-slide {
+      margin-top: clamp(34px, 8vh, 64px);
+    }
+    html.is-ios-webkit .greeting-dots {
+      display: none;
+    }
 
     /* ================================================================
        §3 D-DAY
@@ -3339,17 +3369,81 @@
       html.is-ios-webkit #story .carousel-track.story-gsap-track,
       html.is-ios-webkit #chapel .carousel-track.guide-gsap-track,
       html.is-ios-webkit #moments .hc-track {
-        overflow-x: hidden;
+        overflow: visible;
         scroll-snap-type: none;
         touch-action: pan-y;
-        overscroll-behavior-x: auto;
+        overscroll-behavior: auto;
         -webkit-overflow-scrolling: auto;
+        cursor: default;
       }
 
       html.is-ios-webkit #story .carousel-card,
       html.is-ios-webkit #chapel .guide-item,
       html.is-ios-webkit #moments .hc-item {
-        scroll-snap-align: none;
+        scroll-snap-align: unset;
+      }
+
+      html.is-ios-webkit #story.story-scroll-section,
+      html.is-ios-webkit #chapel.guide-scroll-section {
+        min-height: auto;
+        display: block;
+        padding-top: clamp(64px, 12vh, 96px);
+        padding-bottom: clamp(64px, 12vh, 96px);
+      }
+
+      html.is-ios-webkit #story .story-sticky {
+        transform: none;
+      }
+
+      html.is-ios-webkit #story .carousel-track.story-gsap-track,
+      html.is-ios-webkit #chapel .carousel-track.guide-gsap-track {
+        display: block;
+        padding-left: var(--mobile-carousel-pad);
+        padding-right: var(--mobile-carousel-pad);
+      }
+
+      html.is-ios-webkit #story .story-track-inner,
+      html.is-ios-webkit #chapel .guide-track-inner {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 18px;
+        width: 100%;
+        transform: none !important;
+      }
+
+      html.is-ios-webkit #story .carousel-card,
+      html.is-ios-webkit #chapel .guide-item {
+        width: 100%;
+        max-width: none;
+        flex: none;
+      }
+
+      html.is-ios-webkit #story .carousel-controls,
+      html.is-ios-webkit #chapel .carousel-controls,
+      html.is-ios-webkit #moments .carousel-controls {
+        display: none;
+      }
+
+      html.is-ios-webkit #moments.hc-section {
+        min-height: auto;
+      }
+
+      html.is-ios-webkit #moments .hc-track {
+        padding-left: var(--mobile-carousel-pad);
+        padding-right: var(--mobile-carousel-pad);
+      }
+
+      html.is-ios-webkit #moments .hc-track-inner {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 16px;
+        width: 100%;
+        transform: none !important;
+      }
+
+      html.is-ios-webkit #moments .hc-item {
+        min-width: 0;
+        flex: none;
       }
 
       .hc-track-inner {
@@ -4315,8 +4409,10 @@ function bindIntroHeroMotion() {
     refreshScrollTriggers();
   };
 
-  window.addEventListener('scroll', scheduleRender, { passive: true });
-  window.addEventListener('resize', sync);
+  if (!isIOSWebKit) {
+    window.addEventListener('scroll', scheduleRender, { passive: true });
+    window.addEventListener('resize', sync);
+  }
   window.addEventListener('orientationchange', () => window.setTimeout(sync, 160));
   if (!isIOSWebKit) {
     window.visualViewport?.addEventListener('resize', sync);
@@ -4517,6 +4613,7 @@ function bindIOSCarouselTouchGuard() {
     track.addEventListener('touchmove', event => {
       const touch = event.touches && event.touches[0];
       if (!touch) return;
+      if (track.scrollWidth <= track.clientWidth + 2) return;
       const dx = touch.clientX - startX;
       const dy = touch.clientY - startY;
 
@@ -4721,8 +4818,8 @@ function refreshHorizontalScrollMode() {
     window.ScrollTrigger?.getById('guideHorizontal')?.refresh();
   }, 160);
 }
-window.addEventListener('resize', refreshHorizontalScrollMode);
 if (!isIOSWebKit) {
+  window.addEventListener('resize', refreshHorizontalScrollMode);
   window.visualViewport?.addEventListener('resize', refreshHorizontalScrollMode);
 }
 
@@ -4762,6 +4859,11 @@ function bindGreetingSlides() {
   };
 
   setActive(0);
+
+  if (isIOSWebKit) {
+    slides.forEach(slide => slide.classList.add('is-active'));
+    return;
+  }
 
   if (!window.gsap || !window.ScrollTrigger) return;
   const revealWords = Array.from(section.querySelectorAll('.greeting-reveal-word'));
