@@ -4715,56 +4715,6 @@ function bindGreetingSlides() {
     .to({}, { duration: 0.10 });
 }
 
-function bindMobileCarouselResets() {
-  const isMobile = () => window.matchMedia('(max-width: 640px)').matches;
-  const targets = [
-    { section: 'moments', track: 'hcTrack2' }
-  ];
-
-  const resetTrack = track => {
-    if (!track) return;
-    track.scrollLeft = 0;
-    const inner = track.querySelector('.story-track-inner, .hc-track-inner');
-    if (inner && window.gsap) gsap.set(inner, { clearProps: 'transform' });
-  };
-
-  const resetAll = () => {
-    if (!isMobile()) return;
-    targets.forEach(({ track }) => resetTrack(document.getElementById(track)));
-  };
-  const scheduleResetAll = () => {
-    resetAll();
-    window.requestAnimationFrame(resetAll);
-    window.setTimeout(resetAll, 160);
-  };
-
-  scheduleResetAll();
-  window.addEventListener('load', scheduleResetAll);
-  window.addEventListener('pageshow', scheduleResetAll);
-  window.addEventListener('hashchange', scheduleResetAll);
-  window.addEventListener('orientationchange', () => window.setTimeout(scheduleResetAll, 250));
-
-  if (!('IntersectionObserver' in window)) return;
-
-  const entered = new Set();
-  const observer = new IntersectionObserver(entries => {
-    if (!isMobile()) return;
-    entries.forEach(entry => {
-      if (!entry.isIntersecting) return;
-      const item = targets.find(target => target.section === entry.target.id);
-      if (!item || entered.has(item.section)) return;
-      entered.add(item.section);
-      resetTrack(document.getElementById(item.track));
-    });
-  }, { threshold: 0.18 });
-
-  targets.forEach(({ section }) => {
-    const el = document.getElementById(section);
-    if (el) observer.observe(el);
-  });
-}
-bindMobileCarouselResets();
-
 if (window.ScrollTrigger) {
   window.addEventListener('load', () => {
     window.requestAnimationFrame(() => ScrollTrigger.refresh());
