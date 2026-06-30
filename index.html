@@ -1642,7 +1642,10 @@
       #story .story-tag { font-size: 11px; margin-top: 8px; }
     }
     @media (max-width: 640px) {
-      #story .carousel-card { flex-basis: 78vw; }
+      #story .carousel-card {
+        flex-basis: min(320px, 78vw);
+        max-width: min(320px, 78vw);
+      }
       #story .story-media { height: min(78vw, 34vh); }
       #story .story-sticky {
         min-height: 0;
@@ -3329,8 +3332,8 @@
       }
 
       #story .carousel-card {
-        flex-basis: calc(100vw - (var(--mobile-carousel-pad) * 2));
-        max-width: calc(100vw - (var(--mobile-carousel-pad) * 2));
+        flex-basis: min(320px, 78vw);
+        max-width: min(320px, 78vw);
       }
 
       #story .story-media {
@@ -3366,7 +3369,6 @@
         scroll-snap-align: start;
       }
 
-      html.is-ios-webkit #story .carousel-track.story-gsap-track,
       html.is-ios-webkit #chapel .carousel-track.guide-gsap-track,
       html.is-ios-webkit #moments .hc-track {
         overflow: visible;
@@ -3377,13 +3379,11 @@
         cursor: default;
       }
 
-      html.is-ios-webkit #story .carousel-card,
       html.is-ios-webkit #chapel .guide-item,
       html.is-ios-webkit #moments .hc-item {
         scroll-snap-align: unset;
       }
 
-      html.is-ios-webkit #story.story-scroll-section,
       html.is-ios-webkit #chapel.guide-scroll-section {
         min-height: auto;
         display: block;
@@ -3391,18 +3391,12 @@
         padding-bottom: clamp(64px, 12vh, 96px);
       }
 
-      html.is-ios-webkit #story .story-sticky {
-        transform: none;
-      }
-
-      html.is-ios-webkit #story .carousel-track.story-gsap-track,
       html.is-ios-webkit #chapel .carousel-track.guide-gsap-track {
         display: block;
         padding-left: var(--mobile-carousel-pad);
         padding-right: var(--mobile-carousel-pad);
       }
 
-      html.is-ios-webkit #story .story-track-inner,
       html.is-ios-webkit #chapel .guide-track-inner {
         display: grid;
         grid-template-columns: 1fr;
@@ -3411,14 +3405,12 @@
         transform: none !important;
       }
 
-      html.is-ios-webkit #story .carousel-card,
       html.is-ios-webkit #chapel .guide-item {
         width: 100%;
         max-width: none;
         flex: none;
       }
 
-      html.is-ios-webkit #story .carousel-controls,
       html.is-ios-webkit #chapel .carousel-controls,
       html.is-ios-webkit #moments .carousel-controls {
         display: none;
@@ -4591,7 +4583,7 @@ bindHcNav('hcTrack2', 'hcPrev2', 'hcNext2');
 
 function bindIOSCarouselTouchGuard() {
   if (!isIOSWebKit) return;
-  const tracks = ['storyTrack', 'hcTrack2', 'chapelTrack']
+  const tracks = ['hcTrack2', 'chapelTrack']
     .map(id => document.getElementById(id))
     .filter(Boolean);
 
