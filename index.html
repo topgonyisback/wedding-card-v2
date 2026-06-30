@@ -1027,37 +1027,6 @@
         margin-top: 34px;
       }
     }
-    html.is-ios-webkit #greeting {
-      min-height: auto;
-      padding-bottom: clamp(36px, 8vh, 72px);
-    }
-    html.is-ios-webkit .greeting-pin {
-      position: relative;
-      top: auto;
-      height: auto;
-      min-height: 0;
-      padding: clamp(88px, 16vh, 140px) 0 clamp(48px, 9vh, 88px);
-    }
-    html.is-ios-webkit .greeting-frame {
-      min-height: 0;
-      display: block;
-      overflow: visible;
-    }
-    html.is-ios-webkit .greeting-slide {
-      position: relative;
-      inset: auto;
-      display: block;
-      opacity: 1 !important;
-      transform: none !important;
-      pointer-events: auto;
-    }
-    html.is-ios-webkit .greeting-slide + .greeting-slide {
-      margin-top: clamp(34px, 8vh, 64px);
-    }
-    html.is-ios-webkit .greeting-dots {
-      display: none;
-    }
-
     /* ================================================================
        §3 D-DAY
     ================================================================ */
@@ -3783,7 +3752,7 @@
         <div class="venue-field">
           <div class="field-label">Date &amp; Time</div>
           <div class="field-val">2026년 8월 1일 토요일</div>
-          <div class="field-sub">오후 5시 정각</div>
+          <div class="field-sub">오후 5시</div>
         </div>
         <div class="venue-divider"></div>
         <div class="venue-field">
@@ -3915,7 +3884,7 @@
           <div class="venue-field">
             <div class="field-label">Date &amp; Time</div>
             <div class="field-val">2026년 8월 1일 토요일</div>
-            <div class="field-sub">오후 5시 정각</div>
+            <div class="field-sub">오후 5시</div>
           </div>
           <div class="venue-divider"></div>
           <div class="venue-field">
@@ -4027,7 +3996,7 @@
   <div class="share-hero">
     <div class="share-hero-bg" data-bg="gallery/optimized/outro-hero.webp" aria-hidden="true"></div>
     <div class="share-hero-content reveal">
-      <h2>더할 나위 없이 찬란할<br>제2의 시작을 축하해 주세요</h2>
+      <h2>저희의 제2의 시작을<br>이쁘게 지켜봐주시고<br>응원 해주세요!</h2>
     </div>
     <div class="share-row reveal">
       <button class="btn btn-ghost"   id="copy-btn">링크 복사</button>
@@ -4741,11 +4710,6 @@ function bindGreetingSlides() {
   };
 
   setActive(0);
-
-  if (isIOSWebKit) {
-    slides.forEach(slide => slide.classList.add('is-active'));
-    return;
-  }
 
   if (!window.gsap || !window.ScrollTrigger) return;
   const revealWords = Array.from(section.querySelectorAll('.greeting-reveal-word'));
