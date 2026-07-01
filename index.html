@@ -862,6 +862,10 @@
       padding: clamp(72px, 10vh, 120px) 0;
       background: #F7F1E8;
     }
+    #greeting.greeting-gsap .greeting-pin {
+      position: relative;
+      top: auto;
+    }
     .greeting {
       text-align: center;
       width: min(760px, 100%);
@@ -3331,11 +3335,11 @@
       }
 
       #moments .hc-track {
-        scroll-snap-type: x proximity;
+        scroll-snap-type: none;
       }
 
       #moments .hc-item {
-        scroll-snap-align: start;
+        scroll-snap-align: none;
       }
 
       .hc-track-inner {
@@ -4481,6 +4485,66 @@ function bindHcNav(trackId, prevId, nextId) {
 bindHcNav('hcTrack',  'hcPrev',  'hcNext');
 bindHcNav('hcTrack2', 'hcPrev2', 'hcNext2');
 
+function bindBoundedHorizontalTrack(trackId) {
+  const track = document.getElementById(trackId);
+  if (!track) return;
+
+  let startX = 0;
+  let startY = 0;
+  let startLeft = 0;
+  let horizontalIntent = false;
+  let clampTicking = false;
+
+  const maxScroll = () => Math.max(0, track.scrollWidth - track.clientWidth);
+  const clamp = () => {
+    clampTicking = false;
+    const max = maxScroll();
+    if (track.scrollLeft < 0) track.scrollLeft = 0;
+    if (track.scrollLeft > max) track.scrollLeft = max;
+  };
+  const scheduleClamp = () => {
+    if (clampTicking) return;
+    clampTicking = true;
+    window.requestAnimationFrame(clamp);
+  };
+
+  track.addEventListener('touchstart', e => {
+    const touch = e.touches[0];
+    if (!touch) return;
+    startX = touch.clientX;
+    startY = touch.clientY;
+    startLeft = track.scrollLeft;
+    horizontalIntent = false;
+  }, { passive: true });
+
+  track.addEventListener('touchmove', e => {
+    const touch = e.touches[0];
+    if (!touch) return;
+
+    const dx = touch.clientX - startX;
+    const dy = touch.clientY - startY;
+    if (!horizontalIntent && Math.abs(dx) > 8 && Math.abs(dx) > Math.abs(dy) * 1.15) {
+      horizontalIntent = true;
+    }
+    if (!horizontalIntent) return;
+
+    const max = maxScroll();
+    const atStart = track.scrollLeft <= 1 || startLeft <= 1;
+    const atEnd = track.scrollLeft >= max - 1 || startLeft >= max - 1;
+
+    if ((atStart && dx > 0) || (atEnd && dx < 0)) {
+      e.preventDefault();
+      scheduleClamp();
+    }
+  }, { passive: false });
+
+  track.addEventListener('touchend', scheduleClamp, { passive: true });
+  track.addEventListener('touchcancel', scheduleClamp, { passive: true });
+  track.addEventListener('scroll', scheduleClamp, { passive: true });
+  window.addEventListener('resize', scheduleClamp);
+}
+bindBoundedHorizontalTrack('hcTrack2');
+
 /* ================================================================
    CAROUSEL
 ================================================================ */
@@ -4691,10 +4755,11 @@ bindPlainMomentsCarousel();
 
 function bindGreetingSlides() {
   const section = document.getElementById('greeting');
+  const pin = section?.querySelector('.greeting-pin');
   const panel = section?.querySelector('.greeting');
   const slides = section ? Array.from(section.querySelectorAll('.greeting-slide')) : [];
   const dots = section ? Array.from(section.querySelectorAll('.greeting-dot')) : [];
-  if (!section || !panel || !slides.length) return;
+  if (!section || !pin || !panel || !slides.length) return;
 
   let activeIndex = 0;
   const setActive = index => {
@@ -4712,6 +4777,9 @@ function bindGreetingSlides() {
   setActive(0);
 
   if (!window.gsap || !window.ScrollTrigger) return;
+  window.ScrollTrigger.getById('greetingSlides')?.kill();
+  section.classList.add('greeting-gsap');
+
   const revealWords = Array.from(section.querySelectorAll('.greeting-reveal-word'));
   gsap.set(slides, { autoAlpha: 0, y: 26 });
   gsap.set(slides[0], { autoAlpha: 1, y: 0 });
@@ -4729,6 +4797,9 @@ function bindGreetingSlides() {
       trigger: section,
       start: 'top top',
       end: 'bottom bottom',
+      pin,
+      pinSpacing: false,
+      anticipatePin: 1,
       scrub: 0.12,
       invalidateOnRefresh: true,
       refreshPriority: 1,
