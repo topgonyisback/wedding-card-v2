@@ -1821,6 +1821,14 @@
       opacity: 1;
       transform: translateY(0);
     }
+    #moments.moments-bounded .hc-track {
+      overflow-x: hidden;
+      touch-action: pan-y;
+      -webkit-overflow-scrolling: auto;
+    }
+    #moments.moments-bounded .hc-track-inner {
+      transform: translate3d(var(--moments-x, 0px), 0, 0) !important;
+    }
     .hc-img {
       width: 100%; aspect-ratio: 2 / 3;
       border-radius: var(--ds-radius-lg);
@@ -4485,65 +4493,144 @@ function bindHcNav(trackId, prevId, nextId) {
 bindHcNav('hcTrack',  'hcPrev',  'hcNext');
 bindHcNav('hcTrack2', 'hcPrev2', 'hcNext2');
 
-function bindBoundedHorizontalTrack(trackId) {
-  const track = document.getElementById(trackId);
-  if (!track) return;
+function bindMomentsBoundedCarousel() {
+  const section = document.getElementById('moments');
+  const track = document.getElementById('hcTrack2');
+  const inner = track?.querySelector('.hc-track-inner');
+  const prev = document.getElementById('hcPrev2');
+  const next = document.getElementById('hcNext2');
+  if (!section || !track || !inner || !prev || !next) return;
 
+  let active = false;
+  let currentX = 0;
   let startX = 0;
   let startY = 0;
-  let startLeft = 0;
-  let horizontalIntent = false;
-  let clampTicking = false;
+  let dragStartX = 0;
+  let dragging = false;
+  let suppressClick = false;
+  let resizeTicking = false;
 
-  const maxScroll = () => Math.max(0, track.scrollWidth - track.clientWidth);
-  const clamp = () => {
-    clampTicking = false;
-    const max = maxScroll();
-    if (track.scrollLeft < 0) track.scrollLeft = 0;
-    if (track.scrollLeft > max) track.scrollLeft = max;
+  const useBoundedMode = () => isIOSWebKit || window.matchMedia('(max-width: 640px)').matches;
+  const getGap = () => Number.parseFloat(getComputedStyle(inner).gap) || 0;
+  const getMaxX = () => {
+    const style = getComputedStyle(track);
+    const padLeft = Number.parseFloat(style.paddingLeft) || 0;
+    const padRight = Number.parseFloat(style.paddingRight) || 0;
+    const visibleWidth = Math.max(1, track.clientWidth - padLeft - padRight);
+    return Math.max(0, inner.scrollWidth - visibleWidth);
   };
-  const scheduleClamp = () => {
-    if (clampTicking) return;
-    clampTicking = true;
-    window.requestAnimationFrame(clamp);
+  const clampX = x => Math.max(-getMaxX(), Math.min(0, x));
+  const setX = (x, animate = false) => {
+    currentX = clampX(x);
+    inner.style.transition = animate ? 'transform 280ms var(--ds-ease)' : 'none';
+    inner.style.setProperty('--moments-x', `${currentX}px`);
+    sync();
+  };
+  const step = () => {
+    const item = inner.querySelector('.hc-item');
+    return (item ? item.offsetWidth : track.clientWidth * 0.62) + getGap();
+  };
+  const sync = () => {
+    if (!active) return;
+    const max = getMaxX();
+    prev.disabled = currentX >= -1;
+    next.disabled = currentX <= -max + 1;
+  };
+  const enable = () => {
+    if (!active) {
+      active = true;
+      section.classList.add('moments-bounded');
+      track.scrollLeft = 0;
+    }
+    setX(currentX, false);
+  };
+  const disable = () => {
+    if (!active) return;
+    active = false;
+    section.classList.remove('moments-bounded');
+    currentX = 0;
+    inner.style.transition = '';
+    inner.style.removeProperty('--moments-x');
+    track.scrollLeft = 0;
+  };
+  const refresh = () => {
+    if (useBoundedMode()) enable();
+    else disable();
+  };
+  const scheduleRefresh = () => {
+    if (resizeTicking) return;
+    resizeTicking = true;
+    window.requestAnimationFrame(() => {
+      resizeTicking = false;
+      refresh();
+    });
   };
 
   track.addEventListener('touchstart', e => {
+    if (!active) return;
     const touch = e.touches[0];
     if (!touch) return;
     startX = touch.clientX;
     startY = touch.clientY;
-    startLeft = track.scrollLeft;
-    horizontalIntent = false;
+    dragStartX = currentX;
+    dragging = false;
+    suppressClick = false;
+    inner.style.transition = 'none';
   }, { passive: true });
 
   track.addEventListener('touchmove', e => {
+    if (!active) return;
     const touch = e.touches[0];
     if (!touch) return;
 
     const dx = touch.clientX - startX;
     const dy = touch.clientY - startY;
-    if (!horizontalIntent && Math.abs(dx) > 8 && Math.abs(dx) > Math.abs(dy) * 1.15) {
-      horizontalIntent = true;
+    if (!dragging && Math.abs(dx) > 8 && Math.abs(dx) > Math.abs(dy) * 1.15) {
+      dragging = true;
     }
-    if (!horizontalIntent) return;
+    if (!dragging) return;
 
-    const max = maxScroll();
-    const atStart = track.scrollLeft <= 1 || startLeft <= 1;
-    const atEnd = track.scrollLeft >= max - 1 || startLeft >= max - 1;
-
-    if ((atStart && dx > 0) || (atEnd && dx < 0)) {
-      e.preventDefault();
-      scheduleClamp();
-    }
+    e.preventDefault();
+    if (Math.abs(dx) > 12) suppressClick = true;
+    setX(dragStartX + dx, false);
   }, { passive: false });
 
-  track.addEventListener('touchend', scheduleClamp, { passive: true });
-  track.addEventListener('touchcancel', scheduleClamp, { passive: true });
-  track.addEventListener('scroll', scheduleClamp, { passive: true });
-  window.addEventListener('resize', scheduleClamp);
+  const endTouch = () => {
+    if (!active) return;
+    setX(currentX, false);
+    window.setTimeout(() => { suppressClick = false; }, 80);
+  };
+  track.addEventListener('touchend', endTouch, { passive: true });
+  track.addEventListener('touchcancel', endTouch, { passive: true });
+  track.addEventListener('click', e => {
+    if (!active || !suppressClick) return;
+    e.preventDefault();
+    e.stopImmediatePropagation();
+  }, true);
+
+  prev.addEventListener('click', e => {
+    if (!active) return;
+    e.preventDefault();
+    e.stopImmediatePropagation();
+    setX(currentX + step(), true);
+  }, true);
+  next.addEventListener('click', e => {
+    if (!active) return;
+    e.preventDefault();
+    e.stopImmediatePropagation();
+    setX(currentX - step(), true);
+  }, true);
+
+  window.addEventListener('resize', scheduleRefresh);
+  window.addEventListener('orientationchange', () => window.setTimeout(scheduleRefresh, 180));
+  window.visualViewport?.addEventListener('resize', scheduleRefresh);
+  inner.querySelectorAll('img').forEach(img => {
+    if (!img.complete) img.addEventListener('load', scheduleRefresh, { once: true });
+  });
+
+  refresh();
 }
-bindBoundedHorizontalTrack('hcTrack2');
+bindMomentsBoundedCarousel();
 
 /* ================================================================
    CAROUSEL
