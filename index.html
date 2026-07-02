@@ -1821,13 +1821,15 @@
       opacity: 1;
       transform: translateY(0);
     }
-    #moments.moments-bounded .hc-track {
-      overflow-x: hidden;
-      touch-action: pan-y;
-      -webkit-overflow-scrolling: auto;
-    }
-    #moments.moments-bounded .hc-track-inner {
-      transform: translate3d(var(--moments-x, 0px), 0, 0) !important;
+    #moments .moments-track {
+      position: relative;
+      z-index: 3;
+      gap: clamp(18px, 3vw, 36px);
+      scroll-snap-type: none;
+      scroll-behavior: auto;
+      overscroll-behavior-x: contain;
+      -webkit-overflow-scrolling: touch;
+      padding: clamp(10px, 2vh, 24px) var(--section-heading-left) clamp(16px, 3vh, 36px);
     }
     .hc-img {
       width: 100%; aspect-ratio: 2 / 3;
@@ -1881,6 +1883,11 @@
         scroll-padding-left: var(--section-heading-left);
         padding: var(--ds-space-2) var(--section-heading-left) var(--ds-space-4);
       }
+      #moments .moments-track {
+        scroll-padding-left: var(--section-heading-left);
+        padding: var(--ds-space-2) var(--section-heading-left) var(--ds-space-4);
+      }
+      #moments .moments-track .hc-item { flex: 0 0 clamp(190px, 58vw, 240px); }
       .hc-track-inner { transform: none !important; }
       .hc-section .carousel-controls { padding: 0 var(--section-heading-left) 24px; }
     }
@@ -1894,6 +1901,8 @@
       .hc-desc { font-size: 16px; line-height: 1.48; }
       .hc-track { padding-top: 10px; padding-bottom: 18px; }
       .hc-item { flex-basis: clamp(190px, min(20vw, 29vh), 260px); }
+      #moments .moments-track { padding-top: 10px; padding-bottom: 18px; }
+      #moments .moments-track .hc-item { flex-basis: clamp(190px, min(20vw, 29vh), 260px); }
       .hc-section .carousel-controls { padding-bottom: 18px; }
     }
     @media (max-width: 640px) and (max-height: 760px) {
@@ -3342,11 +3351,11 @@
         padding-right: var(--mobile-carousel-pad);
       }
 
-      #moments .hc-track {
+      #moments .moments-track {
         scroll-snap-type: none;
       }
 
-      #moments .hc-item {
+      #moments .moments-track .hc-item {
         scroll-snap-align: none;
       }
 
@@ -3643,8 +3652,7 @@
       <p class="hc-desc">닮았다는 소리를 28만 4천번 정도 들었어요.<br>하관 운명설은 맞나봅니다!</p>
     </div>
   </div>
-  <div class="hc-track" id="hcTrack2">
-    <div class="hc-track-inner">
+  <div class="carousel-track moments-track" id="hcTrack2">
       <div class="hc-item" role="button" tabindex="0" aria-label="함께한 순간 01 크게 보기" data-src="gallery/optimized/moments01.webp">
         <div class="hc-img"><img src="gallery/optimized/moments01.webp" alt="함께한 순간 01" width="900" height="1350" loading="lazy" decoding="async"></div>
       </div>
@@ -3663,7 +3671,6 @@
       <div class="hc-item" role="button" tabindex="0" aria-label="함께한 순간 06 크게 보기" data-src="gallery/optimized/moments06.webp">
         <div class="hc-img"><img src="gallery/optimized/moments06.webp" alt="함께한 순간 06" width="900" height="1350" loading="lazy" decoding="async"></div>
       </div>
-    </div>
   </div>
   <div class="carousel-controls">
     <button class="carousel-btn" id="hcPrev2" aria-label="이전">‹</button>
@@ -4491,146 +4498,6 @@ function bindHcNav(trackId, prevId, nextId) {
   sync();
 }
 bindHcNav('hcTrack',  'hcPrev',  'hcNext');
-bindHcNav('hcTrack2', 'hcPrev2', 'hcNext2');
-
-function bindMomentsBoundedCarousel() {
-  const section = document.getElementById('moments');
-  const track = document.getElementById('hcTrack2');
-  const inner = track?.querySelector('.hc-track-inner');
-  const prev = document.getElementById('hcPrev2');
-  const next = document.getElementById('hcNext2');
-  if (!section || !track || !inner || !prev || !next) return;
-
-  let active = false;
-  let currentX = 0;
-  let startX = 0;
-  let startY = 0;
-  let dragStartX = 0;
-  let dragging = false;
-  let suppressClick = false;
-  let resizeTicking = false;
-
-  const useBoundedMode = () => isIOSWebKit || window.matchMedia('(max-width: 640px)').matches;
-  const getGap = () => Number.parseFloat(getComputedStyle(inner).gap) || 0;
-  const getMaxX = () => {
-    const style = getComputedStyle(track);
-    const padLeft = Number.parseFloat(style.paddingLeft) || 0;
-    const padRight = Number.parseFloat(style.paddingRight) || 0;
-    const visibleWidth = Math.max(1, track.clientWidth - padLeft - padRight);
-    return Math.max(0, inner.scrollWidth - visibleWidth);
-  };
-  const clampX = x => Math.max(-getMaxX(), Math.min(0, x));
-  const setX = (x, animate = false) => {
-    currentX = clampX(x);
-    inner.style.transition = animate ? 'transform 280ms var(--ds-ease)' : 'none';
-    inner.style.setProperty('--moments-x', `${currentX}px`);
-    sync();
-  };
-  const step = () => {
-    const item = inner.querySelector('.hc-item');
-    return (item ? item.offsetWidth : track.clientWidth * 0.62) + getGap();
-  };
-  const sync = () => {
-    if (!active) return;
-    const max = getMaxX();
-    prev.disabled = currentX >= -1;
-    next.disabled = currentX <= -max + 1;
-  };
-  const enable = () => {
-    if (!active) {
-      active = true;
-      section.classList.add('moments-bounded');
-      track.scrollLeft = 0;
-    }
-    setX(currentX, false);
-  };
-  const disable = () => {
-    if (!active) return;
-    active = false;
-    section.classList.remove('moments-bounded');
-    currentX = 0;
-    inner.style.transition = '';
-    inner.style.removeProperty('--moments-x');
-    track.scrollLeft = 0;
-  };
-  const refresh = () => {
-    if (useBoundedMode()) enable();
-    else disable();
-  };
-  const scheduleRefresh = () => {
-    if (resizeTicking) return;
-    resizeTicking = true;
-    window.requestAnimationFrame(() => {
-      resizeTicking = false;
-      refresh();
-    });
-  };
-
-  track.addEventListener('touchstart', e => {
-    if (!active) return;
-    const touch = e.touches[0];
-    if (!touch) return;
-    startX = touch.clientX;
-    startY = touch.clientY;
-    dragStartX = currentX;
-    dragging = false;
-    suppressClick = false;
-    inner.style.transition = 'none';
-  }, { passive: true });
-
-  track.addEventListener('touchmove', e => {
-    if (!active) return;
-    const touch = e.touches[0];
-    if (!touch) return;
-
-    const dx = touch.clientX - startX;
-    const dy = touch.clientY - startY;
-    if (!dragging && Math.abs(dx) > 8 && Math.abs(dx) > Math.abs(dy) * 1.15) {
-      dragging = true;
-    }
-    if (!dragging) return;
-
-    e.preventDefault();
-    if (Math.abs(dx) > 12) suppressClick = true;
-    setX(dragStartX + dx, false);
-  }, { passive: false });
-
-  const endTouch = () => {
-    if (!active) return;
-    setX(currentX, false);
-    window.setTimeout(() => { suppressClick = false; }, 80);
-  };
-  track.addEventListener('touchend', endTouch, { passive: true });
-  track.addEventListener('touchcancel', endTouch, { passive: true });
-  track.addEventListener('click', e => {
-    if (!active || !suppressClick) return;
-    e.preventDefault();
-    e.stopImmediatePropagation();
-  }, true);
-
-  prev.addEventListener('click', e => {
-    if (!active) return;
-    e.preventDefault();
-    e.stopImmediatePropagation();
-    setX(currentX + step(), true);
-  }, true);
-  next.addEventListener('click', e => {
-    if (!active) return;
-    e.preventDefault();
-    e.stopImmediatePropagation();
-    setX(currentX - step(), true);
-  }, true);
-
-  window.addEventListener('resize', scheduleRefresh);
-  window.addEventListener('orientationchange', () => window.setTimeout(scheduleRefresh, 180));
-  window.visualViewport?.addEventListener('resize', scheduleRefresh);
-  inner.querySelectorAll('img').forEach(img => {
-    if (!img.complete) img.addEventListener('load', scheduleRefresh, { once: true });
-  });
-
-  refresh();
-}
-bindMomentsBoundedCarousel();
 
 /* ================================================================
    CAROUSEL
@@ -4641,8 +4508,10 @@ function bindCarousel(trackId, prevId, nextId) {
   const next  = document.getElementById(nextId);
   if (!track || !prev || !next) return;
   const stepPx = () => {
-    const c = track.querySelector('.carousel-card, .guide-item');
-    return (c ? c.offsetWidth : 360) + 20;
+    const c = track.querySelector('.carousel-card, .guide-item, .hc-item');
+    const styles = getComputedStyle(track);
+    const gap = Number.parseFloat(styles.columnGap || styles.gap) || 20;
+    return (c ? c.offsetWidth : 360) + gap;
   };
   const sync = () => {
     prev.disabled = track.scrollLeft <= 4;
@@ -4748,6 +4617,7 @@ function bindStoryHorizontalScroll() {
 }
 bindStoryHorizontalScroll();
 bindCarousel('storyTrack', 'storyPrev', 'storyNext');
+bindCarousel('hcTrack2', 'hcPrev2', 'hcNext2');
 
 function bindGuideHorizontalScroll() {
   const section = document.getElementById('chapel');
@@ -4828,14 +4698,11 @@ if (!isIOSWebKit) {
 function bindPlainMomentsCarousel() {
   const section = document.getElementById('moments');
   const track = document.getElementById('hcTrack2');
-  const inner = track?.querySelector('.hc-track-inner');
-  if (!section || !track || !inner) return;
+  if (!section || !track) return;
 
   window.ScrollTrigger?.getById('momentsHorizontal')?.kill();
-  section.classList.remove('hc-gsap');
+  section.classList.remove('hc-gsap', 'moments-bounded');
   track.scrollLeft = 0;
-  inner.style.transform = '';
-  window.gsap?.set(inner, { clearProps: 'transform' });
   window.requestAnimationFrame(() => window.dispatchEvent(new Event('resize')));
 }
 bindPlainMomentsCarousel();
