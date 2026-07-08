@@ -954,12 +954,12 @@
       color: #0A84FF;
       pointer-events: none;
       transform: translateZ(0);
+      transform-origin: center;
     }
     .greeting-reveal-word::before {
-      inset: -0.08em -0.14em;
-      text-indent: 0.14em;
       filter: blur(4px);
       opacity: var(--reveal-blur);
+      transform: translateZ(0) scale(1.035);
     }
     .greeting-reveal-word::after {
       opacity: var(--reveal-sharp);
