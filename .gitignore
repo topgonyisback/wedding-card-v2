@@ -18,3 +18,11 @@ photobooth.jpg
 KakaoTalk_Photo_2026-06-03-17-46-42.jpeg
 혜경이어릴때.png
 혜경이어릴때.png
+
+# Publish only optimized gallery assets.
+# Keep source/original photos local to avoid exposing private EXIF data.
+gallery/*
+!gallery/optimized/
+!gallery/optimized/**
+!gallery/og-thumbnail.webp
+!gallery/pokemon-go.webp

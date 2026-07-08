@@ -76,7 +76,9 @@ createdAt: new Date().toISOString()
 
 ## 권장 Firestore Rules
 
-현재 프론트 구조에 맞는 규칙 예시는 아래와 같다.
+현재 프론트 구조에 맞는 규칙은 `firestore.rules`에도 같은 내용으로 저장해두었다.
+Firebase Console의 Firestore `규칙` 탭에 붙여 넣고 `게시`하면 실제 서버 제한이 적용된다.
+Firebase CLI를 사용할 경우 `firebase deploy --only firestore:rules --project topgony-wedding`로 배포할 수 있다.
 
 ```js
 rules_version = '2';
@@ -92,9 +94,9 @@ service cloud.firestore {
         request.resource.data.message is string &&
         request.resource.data.createdAt is string &&
         request.resource.data.name.size() >= 1 &&
-        request.resource.data.name.size() <= 30 &&
+        request.resource.data.name.size() <= 20 &&
         request.resource.data.message.size() >= 1 &&
-        request.resource.data.message.size() <= 500;
+        request.resource.data.message.size() <= 300;
 
       allow update, delete: if false;
     }
