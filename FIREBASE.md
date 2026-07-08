@@ -1,6 +1,6 @@
 # Firebase 방명록 설정
 
-마지막 정리일: 2026-06-21
+마지막 정리일: 2026-07-08
 
 ## 사용 목적
 
@@ -129,8 +129,8 @@ db.collection('guestbook')
 
 현재 프론트는 다음 조건을 만족해야 한다.
 
-- `name`: 1~30자
-- `message`: 1~500자
+- `name`: 1~20자
+- `message`: 1~300자
 - `createdAt`: string
 - 추가 필드 없음
 

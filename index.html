@@ -988,25 +988,36 @@
       vertical-align: .04em;
     }
     .greeting-dots {
-      display: inline-flex;
+      position: absolute;
+      top: 50%;
+      right: clamp(18px, 4vw, 56px);
+      z-index: 2;
+      display: flex;
+      flex-direction: column;
       align-items: center;
       justify-content: center;
-      gap: 8px;
-      margin-top: clamp(18px, 3vh, 28px);
+      gap: 10px;
+      margin-top: 0;
+      transform: translateY(-50%);
+      pointer-events: none;
     }
     .greeting-dot {
       width: 7px;
       height: 7px;
       border-radius: 999px;
       background: rgba(29,29,31,.22);
-      transition: width var(--ds-duration-base) var(--ds-ease), background var(--ds-duration-base) var(--ds-ease);
+      transition:
+        width var(--ds-duration-base) var(--ds-ease),
+        height var(--ds-duration-base) var(--ds-ease),
+        background var(--ds-duration-base) var(--ds-ease);
     }
     .greeting-dot.is-active {
-      width: 26px;
+      width: 7px;
+      height: 26px;
       background: var(--ds-color-text);
     }
     .greeting-sign {
-      margin-top: clamp(32px, 5vh, 56px);
+      margin-top: clamp(56px, 8vh, 88px);
       font-size: 15px;
       color: var(--ds-color-text-tertiary);
       letter-spacing: -0.012em;
@@ -1027,8 +1038,12 @@
       .greeting-frame {
         min-height: 270px;
       }
+      .greeting-dots {
+        right: max(16px, env(safe-area-inset-right));
+        gap: 9px;
+      }
       .greeting-sign {
-        margin-top: 34px;
+        margin-top: 58px;
       }
     }
     /* ================================================================
@@ -3738,6 +3753,9 @@
     <div class="gal-item" data-src="gallery/optimized/Wedding_Snapshots8.webp"><img src="gallery/optimized/Wedding_Snapshots8.webp" alt="" width="1200" height="2140" loading="lazy" decoding="async" onerror="this.closest('.gal-item').style.display='none'"><div class="gal-ov"></div></div>
     <div class="gal-item" data-src="gallery/optimized/Wedding_Snapshots10_rotated.webp"><img src="gallery/optimized/Wedding_Snapshots10_rotated.webp" alt="" width="1200" height="2140" loading="lazy" decoding="async" onerror="this.closest('.gal-item').style.display='none'"><div class="gal-ov"></div></div>
     <div class="gal-item" data-src="gallery/optimized/Wedding_Snapshots11_rotated.webp"><img src="gallery/optimized/Wedding_Snapshots11_rotated.webp" alt="" width="1200" height="2140" loading="lazy" decoding="async" onerror="this.closest('.gal-item').style.display='none'"><div class="gal-ov"></div></div>
+    <div class="gal-item" data-src="gallery/optimized/Wedding_Snapshots12.webp"><img src="gallery/optimized/Wedding_Snapshots12.webp" alt="" width="1010" height="1800" loading="lazy" decoding="async" onerror="this.closest('.gal-item').style.display='none'"><div class="gal-ov"></div></div>
+    <div class="gal-item" data-src="gallery/optimized/IMG_4835.webp"><img src="gallery/optimized/IMG_4835.webp" alt="" width="1010" height="1800" loading="lazy" decoding="async" onerror="this.closest('.gal-item').style.display='none'"><div class="gal-ov"></div></div>
+    <div class="gal-item" data-src="gallery/optimized/IMG_5921.webp"><img src="gallery/optimized/IMG_5921.webp" alt="" width="1010" height="1800" loading="lazy" decoding="async" onerror="this.closest('.gal-item').style.display='none'"><div class="gal-ov"></div></div>
   </div>
 </section>
 
